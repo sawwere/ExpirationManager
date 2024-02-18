@@ -32,7 +32,7 @@ public class Client {
     private LocalDate birthday;
 
     @Builder.Default
-    @OneToMany
+    @OneToMany(orphanRemoval = true)
     @JoinColumn(name = "client_id", referencedColumnName = "id")
     private List<Card> cardList  = new ArrayList<Card>();
 }

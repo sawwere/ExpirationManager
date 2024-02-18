@@ -1,27 +1,37 @@
 package com.mycompany.ExpirationManagerApi.controllers;
 
+import com.mycompany.ExpirationManagerApi.controllers.helper.ControllerHelper;
+import com.mycompany.ExpirationManagerApi.dto.ClientDto;
 import com.mycompany.ExpirationManagerApi.exceptions.CustomException;
-import com.mycompany.ExpirationManagerApi.exceptions.NotFoundException;
+import com.mycompany.ExpirationManagerApi.factories.ClientDtoFactory;
 import com.mycompany.ExpirationManagerApi.storage.entities.Client;
 import com.mycompany.ExpirationManagerApi.storage.repositories.ClientRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+
+@RequiredArgsConstructor
+@Transactional
 @RestController
 public class ClientController {
-    @Autowired
-    ClientRepository clientRepository;
+    private final ClientRepository clientRepository;
+
+    private final ClientDtoFactory clientDtoFactory;
+
+    private final ControllerHelper controllerHelper;
 
     public static final String CREATE_OR_UPDATE_CLIENT = "/api/clients";
     public static final String FIND_CLIENT = "/api/clients/{client_id}";
     public static final String DELETE_CLIENT = "/api/clients/{client_id}";
     public static final String FIND_ALL_CLIENTS = "/api/clients";
     @PostMapping(CREATE_OR_UPDATE_CLIENT)
-    public Client createClient(
+    public ClientDto createClient(
             @RequestParam(value = "client_id", required = false) Optional<Long> clientId,
             @RequestParam(value = "passport") String passport,
             @RequestParam(value = "first_name") String firstName,
@@ -44,7 +54,7 @@ public class ClientController {
                     .build();
         }
         else {
-            client = findClientOrElseThrowException(clientId.get());
+            client = controllerHelper.findClientOrElseThrowException(clientId.get());
             client.setPassport(passport);
             client.setFirstName(firstName);
             client.setLastName(lastName);
@@ -52,31 +62,26 @@ public class ClientController {
         }
 
         clientRepository.save(client);
-        return client;
+        return clientDtoFactory.make(client);
     }
 
     @GetMapping(FIND_CLIENT)
-    public Client findClient(
+    public ClientDto findClient(
             @PathVariable(value = "client_id") Long clientId) {
-        return findClientOrElseThrowException(clientId);
+        return clientDtoFactory.make(controllerHelper.findClientOrElseThrowException(clientId));
     }
 
     @DeleteMapping(DELETE_CLIENT)
     public String deleteProject(@PathVariable("client_id") Long clientId) {
 
-        findClientOrElseThrowException(clientId);
+        controllerHelper.findClientOrElseThrowException(clientId);
         clientRepository.deleteById(clientId);
         return "TODO OK";
     }
 
     @GetMapping(FIND_ALL_CLIENTS)
-    public List<Client> findAllClients() {
-        return clientRepository.findAll();
+    public List<ClientDto> findAllClients() {
+        return clientRepository.streamAllBy().map(clientDtoFactory::make).collect(Collectors.toList());
     }
 
-    private Client findClientOrElseThrowException(Long clientId) {
-        return clientRepository.findById(clientId)
-                .orElseThrow(() -> new NotFoundException(String.format("Client with id '%s' doesn't exist", clientId))
-                );
-    }
 }

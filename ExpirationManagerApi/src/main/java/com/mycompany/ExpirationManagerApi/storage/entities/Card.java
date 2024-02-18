@@ -1,18 +1,17 @@
 package com.mycompany.ExpirationManagerApi.storage.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.Pattern;
+import lombok.*;
 
 import java.time.LocalDate;
 
+@Entity
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @Table(name = "cards")
 public class Card {
     public enum CardStatus { OK, EXPIRED, ANNULLED }
@@ -22,12 +21,16 @@ public class Card {
     private Long id;
 
     @Column
+    private String cardNumber;
+
+    @Column
     private LocalDate dateOfIssue;
 
     @Column
     private LocalDate dateOfExpiration;
 
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     private Client client;
 
     @Column
