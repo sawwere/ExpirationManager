@@ -11,7 +11,9 @@ public class ClientDtoFactory {
                 .id(client.getId())
                 .firstName(client.getFirstName())
                 .lastName(client.getLastName())
+                .patronymicName(client.getPatronymicName())
                 .passport(client.getPassport())
+                .email(client.getEmail())
                 .birthday(client.getBirthday())
                 .build();
     }

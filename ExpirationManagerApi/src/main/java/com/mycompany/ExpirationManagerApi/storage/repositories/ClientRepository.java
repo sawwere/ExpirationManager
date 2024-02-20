@@ -9,5 +9,6 @@ import java.util.Optional;
 
 public interface ClientRepository extends JpaRepository<Client, Long> {
     Optional<Client> findByPassport(String passport);
+    Optional<Client> findByPassportOrEmail(String passport, String Email);
     Stream<Client> streamAllBy();
 }
