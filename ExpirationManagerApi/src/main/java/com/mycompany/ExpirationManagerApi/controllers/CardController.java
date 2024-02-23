@@ -5,18 +5,13 @@ import com.mycompany.ExpirationManagerApi.dto.CardDto;
 import com.mycompany.ExpirationManagerApi.dto.CardStatusDto;
 import com.mycompany.ExpirationManagerApi.factories.CardDtoFactory;
 import com.mycompany.ExpirationManagerApi.services.CardService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-@Transactional
 @RestController
 public class CardController {
 

@@ -1,6 +1,7 @@
 package com.mycompany.ExpirationManagerApi.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mycompany.ExpirationManagerApi.Application;
 import com.mycompany.ExpirationManagerApi.dto.ClientDto;
 import com.mycompany.ExpirationManagerApi.services.ClientService;
 import com.mycompany.ExpirationManagerApi.storage.entities.Client;
@@ -23,7 +24,7 @@ import java.util.Arrays;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = {Application.class})
 @AutoConfigureMockMvc
 @TestPropertySource("/application-test.properties")
 @Sql(value = {"/sql/create_clients.sql", "/sql/create_cards.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -31,14 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ClientControllerTests {
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
-    ObjectMapper objectMapper;
-
-
-
-
-
+    private ObjectMapper objectMapper;
     @Test
     void testGetAll() throws Exception{
 
@@ -80,7 +75,7 @@ public class ClientControllerTests {
                 .birthday(LocalDate.parse("2020-01-06"))
                 .firstName("Burundi")
                 .lastName("Koch")
-                .email("sigma@mail.com")
+                .email("sigma@mmm.mmm")
                 .passport("6010-000000")
                 .patronymicName("")
                 .build());

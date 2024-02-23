@@ -3,7 +3,6 @@ package com.mycompany.ExpirationManagerApi.controllers;
 import com.mycompany.ExpirationManagerApi.dto.ClientDto;
 import com.mycompany.ExpirationManagerApi.factories.ClientDtoFactory;
 import com.mycompany.ExpirationManagerApi.services.ClientService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +14,6 @@ import java.util.stream.Collectors;
 
 
 @RequiredArgsConstructor
-@Transactional
 @RestController
 public class ClientController {
 

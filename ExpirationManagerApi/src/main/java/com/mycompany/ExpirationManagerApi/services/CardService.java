@@ -2,29 +2,33 @@ package com.mycompany.ExpirationManagerApi.services;
 
 import com.mycompany.ExpirationManagerApi.dto.CardDto;
 import com.mycompany.ExpirationManagerApi.dto.CardStatusDto;
-import com.mycompany.ExpirationManagerApi.dto.ClientDto;
 import com.mycompany.ExpirationManagerApi.exceptions.CustomException;
 import com.mycompany.ExpirationManagerApi.exceptions.InvalidCardStatusException;
 import com.mycompany.ExpirationManagerApi.exceptions.NotFoundException;
 import com.mycompany.ExpirationManagerApi.storage.CardStatus;
-import com.mycompany.ExpirationManagerApi.storage.entities.*;
+import com.mycompany.ExpirationManagerApi.storage.entities.Card;
+import com.mycompany.ExpirationManagerApi.storage.entities.Client;
 import com.mycompany.ExpirationManagerApi.storage.repositories.CardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.Objects;
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class CardService {
 
     private final CardRepository cardRepository;
 
     private final ClientService clientService;
+    private final CustomEmailService emailService;
     public Optional<Card> findCard(Long id) {
         return cardRepository.findById(id);
     }
@@ -97,5 +101,9 @@ public class CardService {
 
     public Stream<Card> findAll() {
         return cardRepository.streamAllBy();
+    }
+
+    public List<Card> findAllCloseToExpire() {
+        return cardRepository.findAllCloseToExpirationByDuration(LocalDate.now(), Duration.ofDays(30));
     }
 }

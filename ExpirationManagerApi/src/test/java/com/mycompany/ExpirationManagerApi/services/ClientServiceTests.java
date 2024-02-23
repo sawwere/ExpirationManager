@@ -1,7 +1,7 @@
 package com.mycompany.ExpirationManagerApi.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mycompany.ExpirationManagerApi.controllers.ClientController;
+import com.mycompany.ExpirationManagerApi.Application;
 import com.mycompany.ExpirationManagerApi.dto.ClientDto;
 import com.mycompany.ExpirationManagerApi.exceptions.NotFoundException;
 import com.mycompany.ExpirationManagerApi.factories.ClientDtoFactory;
@@ -12,23 +12,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@SpringBootTest
+@SpringBootTest(classes = {Application.class})
 @AutoConfigureMockMvc
 @TestPropertySource("/application-test.properties")
 @Sql(value = {"/sql/create_clients.sql", "/sql/create_cards.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
@@ -66,7 +56,7 @@ public class ClientServiceTests {
         assert optionalClient.get().getBirthday().equals(LocalDate.parse("2020-01-06"));
         assert optionalClient.get().getFirstName().equals("Burundi");
         assert optionalClient.get().getLastName().equals("Koch");
-        assert optionalClient.get().getEmail().equals("sigma@mail.com");
+        assert optionalClient.get().getEmail().equals("sigma@mmm.mmm");
         assert optionalClient.get().getPassport().equals("6010-000000");
         assert optionalClient.get().getPatronymicName().equals("");
     }

@@ -1,6 +1,7 @@
 package com.mycompany.ExpirationManagerApi.controllers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mycompany.ExpirationManagerApi.Application;
 import com.mycompany.ExpirationManagerApi.dto.CardDto;
 import com.mycompany.ExpirationManagerApi.dto.CardStatusDto;
 import com.mycompany.ExpirationManagerApi.storage.entities.Card;
@@ -23,7 +24,7 @@ import java.util.Arrays;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
+@SpringBootTest(classes = {Application.class})
 @AutoConfigureMockMvc
 @TestPropertySource("/application-test.properties")
 @Sql(value = {"/sql/create_clients.sql", "/sql/create_cards.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)

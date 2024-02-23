@@ -34,3 +34,4 @@ build/
 
 src/main/resources/hibernate.cfg.xml
 src/main/resources/application.properties 
+src/test/resources/application-test.properties 
