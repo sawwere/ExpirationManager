@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
-    static final Logger logger =
+    private static final Logger logger =
             Logger.getLogger(NotificationService.class.getName());
 
     private final ClientService clientService;
@@ -37,12 +37,12 @@ public class NotificationService {
 
     @Async
     @Scheduled(fixedRateString = "${interval}")
-    public void sendNotificationsAboutCardExpiration() throws InterruptedException {
+    public void sendNotificationsAboutCardExpiration() {
         List<Card> closeToExpire = cardService.findAllCloseToExpire();
+        System.out.println(closeToExpire.size());
         for (Card card : closeToExpire) {
-            //TODO
-            Client client = clientService.findClient(card.getClient().getId()).get();
-            logger.log(Level.FINE, String.format("Send email to" , client.getEmail()));
+            Client client = card.getClient();
+            logger.log(Level.INFO, String.format("Send email to %s" , client.getEmail()));
             emailService.sendSimpleEmail(
                     client.getEmail(),
                     "Истечение срока карты",

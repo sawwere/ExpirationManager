@@ -7,9 +7,14 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 @Service
 @RequiredArgsConstructor
 public class CustomEmailService{
+    private static final Logger logger =
+            Logger.getLogger(CustomEmailService.class.getName());
 
     private final JavaMailSender emailSender;
 
@@ -21,7 +26,7 @@ public class CustomEmailService{
             simpleMailMessage.setText(message);
             emailSender.send(simpleMailMessage);
         } catch (MailException mailException) {
-            System.out.println(String.format("Error while sending out email..%s", mailException.getStackTrace()));
+            logger.log(Level.SEVERE, String.format("Error while sending email %s", mailException.getMessage()));
         }
     }
 }

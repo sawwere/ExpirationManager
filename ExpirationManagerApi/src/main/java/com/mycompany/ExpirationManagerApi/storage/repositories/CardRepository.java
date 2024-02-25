@@ -16,8 +16,10 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     Stream<Card> streamAllBy();
     Stream<Card> streamByClient(Client client);
 
-    @Query("SELECT c FROM Card c " +
-            "WHERE c.status = 'OK' " +
-            "AND c.dateOfExpiration - :date = :daysUntilExpiration")
+    @Query(""" 
+                SELECT c FROM Card c
+                JOIN FETCH c.client
+                WHERE c.status = 'OK'
+                    AND c.dateOfExpiration - :date = :daysUntilExpiration""")
     List<Card> findAllCloseToExpirationByDuration(LocalDate date, Duration daysUntilExpiration);
 }
