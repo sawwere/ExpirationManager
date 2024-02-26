@@ -38,7 +38,7 @@ public class CardController {
 
     @GetMapping(FIND_CARDS_BY_CLIENT)
     public List<CardDto> getCards(@PathVariable(value = "client_id") Long clientId) {
-        return cardService.findAllByClient(clientId).map(cardDtoFactory::make).collect(Collectors.toList());
+        return cardService.findAllByClient(clientId).stream().map(cardDtoFactory::make).collect(Collectors.toList());
     }
 
     @GetMapping(FIND_CARD)
@@ -64,6 +64,6 @@ public class CardController {
 
     @GetMapping(FIND_ALL_CARDS)
     public List<CardDto> findAllCards() {
-        return cardService.findAll().map(cardDtoFactory::make).collect(Collectors.toList());
+        return cardService.findAll().stream().map(cardDtoFactory::make).collect(Collectors.toList());
     }
 }

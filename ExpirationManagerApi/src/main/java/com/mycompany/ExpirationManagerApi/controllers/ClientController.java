@@ -61,7 +61,7 @@ public class ClientController {
 
     @GetMapping(FIND_ALL_CLIENTS)
     public List<ClientDto> findAllClients() {
-        return clientService.findAll().map(clientDtoFactory::make).collect(Collectors.toList());
+        return clientService.findAll().stream().map(clientDtoFactory::make).collect(Collectors.toList());
     }
 
 }

@@ -9,45 +9,37 @@ import com.mycompany.ExpirationManagerApi.storage.CardStatus;
 import com.mycompany.ExpirationManagerApi.storage.entities.Card;
 import com.mycompany.ExpirationManagerApi.storage.entities.Client;
 import com.mycompany.ExpirationManagerApi.storage.repositories.CardRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class CardService {
 
     private final CardRepository cardRepository;
 
     private final ClientService clientService;
-    private final CustomEmailService emailService;
+
+    @Transactional
     public Optional<Card> findCard(Long id) {
         return cardRepository.findById(id);
     }
 
+    @Transactional
     public Card findCardOrElseThrowException(Long cardId) {
         return cardRepository.findById(cardId)
                 .orElseThrow(() -> new NotFoundException(String.format("Card with id '%s' doesn't exist", cardId))
                 );
     }
 
-    public Boolean isCardNumberValid(String cardNumber) {
-        return cardNumber.matches("/d[16]");
-    }
-    public String generateCardNumber() {
-        String str = Instant.now().toString();
-        System.out.println(str);
-        return str;
-    }
-
+    @Transactional
     public Card createCard(Long clientId, CardDto cardDto) {
         var optionalClient = clientService.findClient(clientId);
         if (optionalClient.isEmpty()) {
@@ -71,6 +63,7 @@ public class CardService {
         return card;
     }
 
+    @Transactional
     public Card updateCardStatus(Long cardId, CardStatusDto cardStatusDto) {
         if (!cardStatusDto.isValid())
             throw new InvalidCardStatusException(
@@ -89,21 +82,79 @@ public class CardService {
         return card;
     }
 
+    @Transactional
     public void deleteCard(Long cardId) {
         findCardOrElseThrowException(cardId);
         cardRepository.deleteById(cardId);
     }
 
-    public Stream<Card> findAllByClient(Long clientId) {
+    @Transactional
+    public List<Card> findAllByClient(Long clientId) {
         Client client = clientService.findClientOrElseThrowException(clientId);
-        return client.getCardList().stream();
+        return client.getCardList();
     }
 
-    public Stream<Card> findAll() {
-        return cardRepository.streamAllBy();
+    @Transactional
+    public List<Card> findAll() {
+        return cardRepository.findAllBy();
     }
 
+    @Transactional
     public List<Card> findAllCloseToExpire() {
         return cardRepository.findAllCloseToExpirationByDuration(LocalDate.now(), Duration.ofDays(30));
+    }
+    //-----------------------------------------------------
+    // CARD NUMBER
+    //-----------------------------------------------------
+
+    /**
+     * @param cardNumber string to be validated
+     * @return result of applying validation Luhn algorithm
+     */
+    public Boolean isCardNumberValid(String cardNumber) {
+        int sum = 0;
+        for (int i = cardNumber.length()-1; i >= 0; i--) {
+            char tmp = cardNumber.charAt(i);
+            int num = tmp - '0';
+            if (i % 2 == 0) {
+                num *= 2;
+            }
+            sum += num;
+        }
+        return sum % 10 == 0;
+    }
+
+
+    /**
+     * @param prefix generated card number starts with that string (1-15 symbols)
+     * @return card number generated with Luhn algorithm
+     */
+    public String generateCardNumber(String prefix) {
+        if (prefix.length() > 15)
+            throw new IllegalArgumentException("Card number can not contain more than 16 digits");
+        //actually card number has 16 digits(in general), but one is reserved to be the check digit
+        int neededLength = 15 - prefix.length();
+
+        // up to 9 digits
+        String nanoSeconds = String.valueOf(Instant.now().getNano());
+        String seconds = String.valueOf(Instant.now().getEpochSecond());
+        String combined = nanoSeconds+seconds;
+        if (combined.length() < neededLength) {
+            combined += "0".repeat(neededLength - combined.length());
+        }
+        else if (combined.length() > neededLength) {
+            combined = combined.substring(0, neededLength);
+        }
+        int sum = 0;
+        for (int i = neededLength-1; i >= 0; i--) {
+            int num = combined.charAt(i) - '0';
+            if (i % 2 == 0) {
+                num *= 2;
+            }
+            sum += num;
+        }
+        int s = (10 - (sum % 10)) % 10;
+        System.out.println((sum +s)% 10 == 0);
+        return combined + s;
     }
 }

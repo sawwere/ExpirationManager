@@ -6,34 +6,32 @@ import com.mycompany.ExpirationManagerApi.exceptions.NotFoundException;
 import com.mycompany.ExpirationManagerApi.storage.entities.Client;
 import com.mycompany.ExpirationManagerApi.storage.repositories.ClientRepository;
 import jakarta.transaction.Transactional;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import lombok.Singular;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class ClientService {
 
     private final ClientRepository clientRepository;
 
+    @Transactional
     public Optional<Client> findClient(Long id) {
         return clientRepository.findById(id);
     }
 
+    @Transactional
     public Client findClientOrElseThrowException(Long clientId) {
         return clientRepository.findById(clientId)
                 .orElseThrow(() -> new NotFoundException(String.format("Client with id '%s' doesn't exist", clientId))
                 );
     }
 
+    @Transactional
     public Client createClient(ClientDto clientDto) {
         var optionalClient = clientRepository.findByPassportOrEmail(clientDto.getPassport(), clientDto.getEmail());
         if (optionalClient.isPresent()) {
@@ -53,6 +51,7 @@ public class ClientService {
         return client;
     }
 
+    @Transactional
     public Client updateClient(Long clientId,
                              Optional<String> passport,
                              Optional<String> email,
@@ -73,12 +72,14 @@ public class ClientService {
         return client;
     }
 
+    @Transactional
     public void deleteClient(Long clientId) {
         Client client = findClientOrElseThrowException(clientId);
         clientRepository.deleteById(clientId);
     }
 
-    public Stream<Client> findAll() {
-        return clientRepository.streamAllBy();
+    @Transactional
+    public List<Client> findAll() {
+        return clientRepository.streamAllBy().toList();
     }
 }

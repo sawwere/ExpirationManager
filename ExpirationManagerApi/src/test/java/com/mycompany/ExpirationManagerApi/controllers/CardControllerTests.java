@@ -5,6 +5,7 @@ import com.mycompany.ExpirationManagerApi.Application;
 import com.mycompany.ExpirationManagerApi.dto.CardDto;
 import com.mycompany.ExpirationManagerApi.dto.CardStatusDto;
 import com.mycompany.ExpirationManagerApi.storage.entities.Card;
+import jakarta.transaction.Transactional;
 import org.checkerframework.checker.units.qual.C;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -25,6 +26,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = {Application.class})
+@Transactional
 @AutoConfigureMockMvc
 @TestPropertySource("/application-test.properties")
 @Sql(value = {"/sql/create_clients.sql", "/sql/create_cards.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
