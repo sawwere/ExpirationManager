@@ -33,6 +33,11 @@ public class CardService {
     }
 
     @Transactional
+    public Optional<Card> findByCardNumber(String cardNumber) {
+        return cardRepository.findByCardNumber(cardNumber);
+    }
+
+    @Transactional
     public Card findCardOrElseThrowException(Long cardId) {
         return cardRepository.findById(cardId)
                 .orElseThrow(() -> new NotFoundException(String.format("Card with id '%s' doesn't exist", cardId))
@@ -103,6 +108,11 @@ public class CardService {
     public List<Card> findAllCloseToExpire() {
         return cardRepository.findAllCloseToExpirationByDuration(LocalDate.now(), Duration.ofDays(30));
     }
+
+    @Transactional
+    public List<Card> findAllReadyToExpire() {
+        return cardRepository.findAllCloseToExpirationByDuration(LocalDate.now(), Duration.ofDays(0));
+    }
     //-----------------------------------------------------
     // CARD NUMBER
     //-----------------------------------------------------
@@ -154,7 +164,6 @@ public class CardService {
             sum += num;
         }
         int s = (10 - (sum % 10)) % 10;
-        System.out.println((sum +s)% 10 == 0);
         return combined + s;
     }
 }

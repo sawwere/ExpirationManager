@@ -1,22 +1,25 @@
-package com.mycompany.ExpirationManagerApi.services;
+package com.mycompany.ExpirationManagerApi.scheduled;
 
+import com.mycompany.ExpirationManagerApi.services.CardService;
+import com.mycompany.ExpirationManagerApi.services.ClientService;
+import com.mycompany.ExpirationManagerApi.services.CustomEmailService;
 import com.mycompany.ExpirationManagerApi.storage.entities.Card;
 import com.mycompany.ExpirationManagerApi.storage.entities.Client;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@Service
+@Component
 @RequiredArgsConstructor
-public class NotificationService {
+public class NotificationScheduler {
     private static final Logger logger =
-            Logger.getLogger(NotificationService.class.getName());
+            Logger.getLogger(NotificationScheduler.class.getName());
 
     private final ClientService clientService;
     private final CardService cardService;
