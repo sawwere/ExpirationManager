@@ -1,53 +1,55 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" lang="ru">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"  xmlns:layout="http://www.w3.org/1999/xhtml" layout:decorate="~{layouts/layout}">
 <head>
-    <meta charset="utf-8">
-    <meta content="width=device-width, initial-scale=1.0" name="viewport">
-
-    <title>ExpirationManager</title>
-    <meta content="" name="description">
-    <meta content="" name="keywords">
-
-    <!-- Favicons -->
-    <link href="/img/icon.png" rel="icon">
-    <link href="/img/icon.png" rel="apple-touch-icon">
-    <!-- Template Main CSS File -->
-    <link rel="stylesheet" type="text/css" media="all" href="/css/bootstrap/bootstrap.css" />
-    <link rel="stylesheet" type="text/css" media="all" href="/css/style.css" />
-    <link rel="stylesheet" type="text/css" media="all" href="/css/table.css" />
+    <title>Клиенты</title>
 </head>
-
 <body>
-    <!-- ======= Header ======= -->
-    <header id="header" class="d-flex align-items-center">
-        <div class="container d-flex align-items-center justify-content-between">
-
-            <h1 class="logo"><a href="/">ExpirationManager</a></h1>
-
-            <nav id="navbar" class="navbar">
-                <ul>
-                    <li><a class="nav-link" href="/clients">Клиенты</a></li>
-                    <li><a class="nav-link" href="/cards">Банковские карты</a></li>
-                </ul>
-                <i class="bi bi-list mobile-nav-toggle"></i>
-            </nav>
+<div layout:fragment="content">
+    <div class="container">
+        <h1>Создать нового клиента</h1>
+        <div class="client_creation_block px-4">
+            <form action="#" th:action="@{clients}" th:object="${newClient}" method="post">
+                <div class="input-group mb-3">
+                    <span class="input-group-text">ФИО</span>
+                    <input type="text" class="form-control" th:field="*{lastName}" placeholder="Фамилия"/>
+                    <input type="text" class="form-control" th:field="*{firstName}" placeholder="Имя"/>
+                    <input type="text" class="form-control" th:field="*{patronymicName}" placeholder="Отчество"/>
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Паспортные данные</span>
+                    <input type="text" class="form-control" th:field="*{passport}" placeholder="СерияНомер">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Электронная почта</span>
+                    <input type="email" class="form-control" th:field="*{email}" placeholder="abc@mail.com">
+                </div>
+                <div class="input-group mb-3">
+                    <span class="input-group-text">Дата рождения</span>
+                    <input type="date" class="form-control" th:field="*{birthday}" placeholder="abc@mail.com">
+                </div>
+                <p><input type="submit" value="Создать" />
+            </form>
         </div>
-    </header>
-    <div align="center">
-        <h1>Создать клиента</h1>
-
         <hr>
-        <table>
-            <thead>
-            <tr>
-                <th colspan="5">Список клиентов</th>
-            </tr>
+        <table class="table caption-top table-hover">
+            <caption>
+                Список клиентов
+            </caption>
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">Фамилия</th>
+                    <th scope="col">Имя</th>
+                    <th scope="col">Отчество</th>
+                    <th scope="col">Паспорт</th>
+                    <th scope="col">Дата рождения</th>
+                </tr>
             </thead>
             <tbody>
             <tr th:each="client: ${clients}">
-                <td th:text="${client.firstName}"></td>
                 <td th:text="${client.lastName}"></td>
+                <td th:text="${client.firstName}"></td>
                 <td th:text="${client.patronymicName}"></td>
+                <td th:text="${client.passport}"></td>
                 <td th:text="${client.birthday}"></td>
                 <td>
                     <a th:href="@{clients/{id}(id=${client.id})}">Перейти</a>
@@ -56,5 +58,6 @@
             </tbody>
         </table>
     </div>
+</div>
 </body>
 </html>

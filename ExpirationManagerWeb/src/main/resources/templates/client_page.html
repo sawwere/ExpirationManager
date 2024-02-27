@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"  xmlns:layout="http://www.w3.org/1999/xhtml" layout:decorate="~{layouts/layout}">
+<head>
+    <title>Клиент</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <div class="client-info">
+            Информация о клиенте
+            Имя: <td th:text="${client.firstName}"></td>
+            Фамилия: <td th:text="${client.lastName}"></td>
+            Отчество: <td th:text="${client.patronymicName}"></td>
+            Дата рождения: <td th:text="${client.birthday}"></td>
+        </div>
+        <hr>
+        <h1>Добавить карту</h1>
+        <div class="input-group mb-3" align="left">
+            <form action="#" th:action="@{cards}" th:object="${newCard}" method="post">
+                <p>Номер карты: <input type="text" th:field="*{cardNumber}" /></p>
+                <p>Дата выпуска: <input type="date" th:field="*{dateOfIssue}" /></p>
+                <p>Действует до: <input type="date" th:field="*{dateOfExpiration}" /></p>
+                <p><input type="submit" value="Создать" />
+            </form>
+        </div>
+    </div>
+</body>
+</html>
