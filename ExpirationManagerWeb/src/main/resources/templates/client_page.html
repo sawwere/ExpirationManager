@@ -6,22 +6,36 @@
 
 <body>
     <div layout:fragment="content">
-        <div class="client-info">
-            Информация о клиенте
-            Имя: <td th:text="${client.firstName}"></td>
-            Фамилия: <td th:text="${client.lastName}"></td>
-            Отчество: <td th:text="${client.patronymicName}"></td>
-            Дата рождения: <td th:text="${client.birthday}"></td>
-        </div>
-        <hr>
-        <h1>Добавить карту</h1>
-        <div class="input-group mb-3" align="left">
-            <form action="#" th:action="@{cards}" th:object="${newCard}" method="post">
-                <p>Номер карты: <input type="text" th:field="*{cardNumber}" /></p>
-                <p>Дата выпуска: <input type="date" th:field="*{dateOfIssue}" /></p>
-                <p>Действует до: <input type="date" th:field="*{dateOfExpiration}" /></p>
-                <p><input type="submit" value="Создать" />
-            </form>
+        <div class="container">
+            <div class="client-info">
+                <p>Информация о клиенте
+                <p>Имя: <td th:text="${client.firstName}"></td>
+                <p>Фамилия: <td th:text="${client.lastName}"></td>
+                <p>Отчество: <td th:text="${client.patronymicName}"></td>
+                <p>Дата рождения: <td th:text="${client.birthday}"></td>
+                <p>Паспортные данные: <td th:text="${client.passport}"></td>
+                <p>Электронная почта: <td th:text="${client.email}"></td>
+            </div>
+            <hr>
+            <h1>Добавить карту</h1>
+            <div class="client_creation_block px-4">
+                <form action="#" th:action="@{{id}/cards(id=${client.id})}" th:object="${newCard}" method="post">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Номер карты</span>
+                        <input type="text" maxlength="16" required pattern="\d[0, 16]" class="form-control" th:field="*{cardNumber}" placeholder="Оставить пустым для автогенерации"/>
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Дата выпуска</span>
+                        <input type="date" required class="form-control" th:field="*{dateOfIssue}">
+                    </div>
+                    <div class="input-group mb-3">
+                        <span class="input-group-text">Действует до</span>
+                        <input type="date" required class="form-control" th:field="*{dateOfExpiration}">
+                    </div>
+                    <p><input type="submit" value="Создать" />
+                </form>
+            </div>
+            <div th:insert="~{/fragments/card_list :: card_list}"></div>
         </div>
     </div>
 </body>

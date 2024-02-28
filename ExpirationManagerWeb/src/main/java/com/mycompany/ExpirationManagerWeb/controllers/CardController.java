@@ -6,6 +6,7 @@ import com.mycompany.ExpirationManagerWeb.models.Client;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.ModelAndView;
@@ -16,7 +17,6 @@ public class CardController {
     private final ObjectMapper objectMapper;
     public static final String GET_CARDS = "/cards";
     public static final String CREATE_CARD = "/clients/{client_id}/cards";
-    public static final String GET_CARDS_BY_CLIENT = "/clients/{client_id}";
 
     @GetMapping(GET_CARDS)
     public ModelAndView index() throws Exception{
@@ -28,15 +28,19 @@ public class CardController {
                 .body(String.class);
         Card[] cards =  objectMapper.readValue(result, Card[].class);
         mav.addObject("cards", cards);
-        Card newCard = new Card();
-        mav.addObject("newClient", newCard);
         return mav;
     }
 
     @PostMapping(CREATE_CARD)
-    public String create(Card card) throws Exception{
+    public String create(
+            @PathVariable (value = "client_id") Long clientId,
+            Card card) throws Exception{
         RestClient defaultClient = RestClient.create();
-
-        return "redirect:/cards";
+        String result = defaultClient.post()
+                .uri("http://localhost:8080/api/clients/%s/cards".formatted(clientId))
+                .body(card)
+                .retrieve()
+                .body(String.class);
+        return "redirect:%s".formatted(ClientController.SHOW_CLIENT);
     }
 }

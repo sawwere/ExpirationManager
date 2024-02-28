@@ -23,7 +23,7 @@ public class ClientController {
 
     @GetMapping(GET_CLIENTS)
     public ModelAndView index() throws Exception{
-        ModelAndView mav =new ModelAndView("clients");
+        ModelAndView mav = new ModelAndView("clients");
         RestClient defaultClient = RestClient.create();
         String result = defaultClient.get()
                 .uri("http://localhost:8080/api/clients")
@@ -59,6 +59,12 @@ public class ClientController {
         mav.addObject("client", client);
         Card newCard = new Card();
         mav.addObject("newCard", newCard);
+        String cardsResult = defaultClient.get()
+                .uri("http://localhost:8080/api/clients/%d/cards".formatted(clientId))
+                .retrieve()
+                .body(String.class);
+        Card[] cards = objectMapper.readValue(cardsResult, Card[].class);
+        mav.addObject("cards", cards);
         return mav;
     }
 }

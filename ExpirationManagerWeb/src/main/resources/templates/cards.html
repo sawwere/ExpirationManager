@@ -3,31 +3,11 @@
 <head>
     <title>ExpirationManager</title>
 </head>
-
 <body>
-<div layout:fragment="content">
-    <table class="table table-hover">
-        <thead>
-        <tr>
-            <th colspan="5">Список карт</th>
-        </tr>
-        <tr>
-            <th scope="col">Номер</th>
-            <th scope="col">Дата выпуска</th>
-            <th scope="col">Срок истечения</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="card: ${cards}">
-            <td th:text="${card.cardNumber}"></td>
-            <td th:text="${card.dateOfIssue}"></td>
-            <td th:text="${card.dateOfExpiration}"></td>
-            <td>
-                <a th:href="@{cards/{id}(id=${card.id})}">Аннулировть</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
+    <div layout:fragment="content">
+        <div class="container">
+            <div th:insert="~{/fragments/card_list :: card_list}"></div>
+        </div>
+    </div>
 </body>
 </html>

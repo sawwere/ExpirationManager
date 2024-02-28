@@ -1,0 +1,30 @@
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<body>
+    <div th:fragment="card_list">
+        <table class="table caption-top table-hover">
+            <caption>
+                Список карт
+            </caption>
+            <thead>
+            <tr>
+                <th scope="col">Номер</th>
+                <th scope="col">Дата выпуска</th>
+                <th scope="col">Действует до</th>
+                <th scope="col">Статус</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="card: ${cards}">
+                <td th:text="${card.cardNumber}"></td>
+                <td th:text="${card.dateOfIssue}"></td>
+                <td th:text="${card.dateOfExpiration}"></td>
+                <td th:text="${card.status}"></td>
+                <td>
+                    <a th:href="@{/cards/{id}(id=${card.id})}">Аннулировать</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
