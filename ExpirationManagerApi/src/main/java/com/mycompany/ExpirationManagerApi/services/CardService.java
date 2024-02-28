@@ -96,7 +96,7 @@ public class CardService {
     @Transactional
     public List<Card> findAllByClient(Long clientId) {
         Client client = clientService.findClientOrElseThrowException(clientId);
-        return client.getCardList();
+        return cardRepository.findAllByClient(client);
     }
 
     @Transactional

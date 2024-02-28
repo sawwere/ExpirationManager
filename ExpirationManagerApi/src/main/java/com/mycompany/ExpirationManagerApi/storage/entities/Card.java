@@ -30,7 +30,6 @@ public class Card {
     @Column(nullable = false)
     private LocalDate dateOfExpiration;
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     private Client client;
 

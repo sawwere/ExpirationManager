@@ -1,6 +1,7 @@
 package com.mycompany.ExpirationManagerApi.storage.repositories;
 
 import com.mycompany.ExpirationManagerApi.storage.entities.Card;
+import com.mycompany.ExpirationManagerApi.storage.entities.Client;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -14,7 +15,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     Optional<Card> findByCardNumber(String cardNumber);
 
     List<Card> findAllBy();
-    Stream<Card> streamAllBy();
+    List<Card> findAllByClient(Client client);
 
     @Query(""" 
                 SELECT c FROM Card c
