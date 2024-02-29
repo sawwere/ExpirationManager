@@ -6,6 +6,7 @@ import com.mycompany.ExpirationManagerApi.exceptions.NotFoundException;
 import com.mycompany.ExpirationManagerApi.storage.entities.Client;
 import com.mycompany.ExpirationManagerApi.storage.repositories.ClientRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -32,11 +33,11 @@ public class ClientService {
     }
 
     @Transactional
-    public Client createClient(ClientDto clientDto) {
-        var optionalClient = clientRepository.findByPassportOrEmail(clientDto.getPassport(), clientDto.getEmail());
+    public Client createClient(@Valid ClientDto clientDto) {
+        var optionalClient = clientRepository.findFirstByPassportOrEmail(clientDto.getPassport(), clientDto.getEmail());
         if (optionalClient.isPresent()) {
             throw new CustomException(
-                    String.format("Client with given info already exists with id %d",
+                    String.format("Client with given info already exists with id '%d'",
                             optionalClient.get().getId()));
         }
         Client client = Client.builder()

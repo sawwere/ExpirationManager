@@ -102,7 +102,7 @@ public class CardControllerTests {
         assert card.getId() == 1;
         assert card.equals(CardDto.builder()
                 .id(1L)
-                .cardNumber("111100351")
+                .cardNumber("9879671001709031")
                 .dateOfExpiration(LocalDate.parse("2024-11-24"))
                 .dateOfIssue(LocalDate.parse("2020-11-11"))
                 .status("OK")
@@ -131,7 +131,7 @@ public class CardControllerTests {
     @Test
     void testCreate() throws Exception {
         CardDto cardDto = CardDto.builder()
-                .cardNumber("123567890")
+                .cardNumber("9879671001709030")
                 .dateOfExpiration(LocalDate.parse("2024-11-24"))
                 .dateOfIssue(LocalDate.parse("2020-11-11"))
                 .build();
@@ -151,7 +151,7 @@ public class CardControllerTests {
     void testAnnulStatus() throws Exception {
         CardStatusDto cardStatusDto = CardStatusDto.annulled();
         byte[] answer = this.mockMvc.perform(
-                MockMvcRequestBuilders.put(CardController.UPDATE_CARD_STATUS, 1)
+                MockMvcRequestBuilders.post(CardController.UPDATE_CARD_STATUS, 1)
                         .content(objectMapper.writeValueAsBytes(cardStatusDto))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
@@ -167,7 +167,7 @@ public class CardControllerTests {
     void testExpireStatus() throws Exception {
         CardStatusDto cardStatusDto = CardStatusDto.expired();
         byte[] answer = this.mockMvc.perform(
-                        MockMvcRequestBuilders.put(CardController.UPDATE_CARD_STATUS, 1)
+                        MockMvcRequestBuilders.post(CardController.UPDATE_CARD_STATUS, 1)
                                 .content(objectMapper.writeValueAsBytes(cardStatusDto))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful())
@@ -183,20 +183,20 @@ public class CardControllerTests {
     void testIncorrectUpdateStatus() throws Exception {
         CardStatusDto cardStatusDto = CardStatusDto.annulled();
         this.mockMvc.perform(
-                        MockMvcRequestBuilders.put(CardController.UPDATE_CARD_STATUS, 1)
+                        MockMvcRequestBuilders.post(CardController.UPDATE_CARD_STATUS, 1)
                                 .content(objectMapper.writeValueAsBytes(cardStatusDto))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is2xxSuccessful()).andReturn();
 
         this.mockMvc.perform(
-                        MockMvcRequestBuilders.put(CardController.UPDATE_CARD_STATUS, 1)
+                        MockMvcRequestBuilders.post(CardController.UPDATE_CARD_STATUS, 1)
                                 .content(objectMapper.writeValueAsBytes(cardStatusDto))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError()).andReturn();
 
         cardStatusDto = CardStatusDto.expired();
         this.mockMvc.perform(
-                        MockMvcRequestBuilders.put(CardController.UPDATE_CARD_STATUS, 1)
+                        MockMvcRequestBuilders.post(CardController.UPDATE_CARD_STATUS, 1)
                                 .content(objectMapper.writeValueAsBytes(cardStatusDto))
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().is4xxClientError()).andReturn();

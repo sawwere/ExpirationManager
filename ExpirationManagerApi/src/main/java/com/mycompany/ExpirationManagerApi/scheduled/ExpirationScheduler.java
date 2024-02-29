@@ -25,20 +25,12 @@ public class ExpirationScheduler {
 
     @Transactional
     public Card generateNewCard(long clientId, Card card) {
-        String newCardNumber = cardService.generateCardNumber("");
         CardDto newCard = CardDto.builder()
-                .cardNumber(newCardNumber)
+                .cardNumber(cardService.generateUnusedCardNumber(""))
                 .dateOfIssue(LocalDate.now())
                 .dateOfExpiration(LocalDate.now().plusYears(4))
                 .status(CardStatus.OK.toString())
                 .build();
-        int collissionCounter = 0;
-        while (cardService.findByCardNumber(newCardNumber).isPresent()) {
-            newCardNumber = cardService.generateCardNumber("");
-            collissionCounter++;
-        }
-        logger.fine("Collision happened %d times during CardNumber generation".formatted(collissionCounter));
-        newCard.setCardNumber(newCardNumber);
         return cardService.createCard(clientId, newCard);
     }
 

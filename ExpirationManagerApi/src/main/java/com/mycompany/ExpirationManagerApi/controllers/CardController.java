@@ -52,7 +52,7 @@ public class CardController {
         return "";
     }
 
-    @PutMapping(UPDATE_CARD_STATUS)
+    @PostMapping(UPDATE_CARD_STATUS)
     public CardDto updateCardStatus(
             @PathVariable(value = "card_id") Long cardId,
             @RequestBody CardStatusDto cardStatusDto) {

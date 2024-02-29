@@ -1,11 +1,7 @@
 package com.mycompany.ExpirationManagerApi.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.mycompany.ExpirationManagerApi.storage.entities.Card;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -16,11 +12,11 @@ import java.time.LocalDate;
 public class ClientDto {
     private Long id;
 
-    @NotNull
+    @NotBlank
     @JsonProperty("first_name")
     private String firstName;
 
-    @NotNull
+    @NotBlank
     @JsonProperty("last_name")
     private String lastName;
 
@@ -29,6 +25,7 @@ public class ClientDto {
     private String patronymicName = "";
 
     @NotNull
+    @Pattern(regexp = "\\d{10}")
     private String passport;
 
     @NotNull

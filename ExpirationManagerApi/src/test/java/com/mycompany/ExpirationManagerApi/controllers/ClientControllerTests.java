@@ -76,7 +76,7 @@ public class ClientControllerTests {
                 .firstName("Burundi")
                 .lastName("Koch")
                 .email("sigma@mmm.mmm")
-                .passport("6010-000000")
+                .passport("6010000000")
                 .patronymicName("")
                 .build());
     }
@@ -88,7 +88,7 @@ public class ClientControllerTests {
                 .firstName("Kinder")
                 .lastName("Penguin")
                 .email("cd@google.uk")
-                .passport("123321456")
+                .passport("1233211234")
                 .patronymicName("Abram")
                 .build();
 
@@ -105,5 +105,81 @@ public class ClientControllerTests {
         assert clientToCreate.equals(client);
     }
 
+    @Test
+    void testCreateInvalidInfo() throws Exception {
+        //invalid passport
+        ClientDto clientToCreate = ClientDto.builder()
+                .birthday(LocalDate.parse("1998-01-06"))
+                .firstName("Kinder")
+                .lastName("Penguin")
+                .email("cd@google.uk")
+                .passport("123321123")
+                .patronymicName("Abram")
+                .build();
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.post(ClientController.CREATE_CLIENT)
+                                .content(objectMapper.writeValueAsBytes(clientToCreate))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+        //invalid name
+        clientToCreate = ClientDto.builder()
+                .birthday(LocalDate.parse("1998-01-06"))
+                .firstName("")
+                .lastName("Penguin")
+                .email("cd@google.ukoz")
+                .passport("0101010101")
+                .build();
 
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.post(ClientController.CREATE_CLIENT)
+                                .content(objectMapper.writeValueAsBytes(clientToCreate))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    void testCreateSameInfo() throws Exception {
+        //same passport
+        ClientDto clientToCreate = ClientDto.builder()
+                .birthday(LocalDate.parse("1998-01-06"))
+                .firstName("Kinder")
+                .lastName("Penguin")
+                .email("sigma@mail.mu")
+                .passport("0000000000")
+                .patronymicName("Abram")
+                .build();
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.post(ClientController.CREATE_CLIENT)
+                                .content(objectMapper.writeValueAsBytes(clientToCreate))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+        //same email
+        clientToCreate = ClientDto.builder()
+                .birthday(LocalDate.parse("1998-01-06"))
+                .firstName("Kinder")
+                .lastName("Penguin")
+                .email("sigma@mmm.mumkmk")
+                .passport("0000000001")
+                .patronymicName("Abram")
+                .build();
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.post(ClientController.CREATE_CLIENT)
+                                .content(objectMapper.writeValueAsBytes(clientToCreate))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+        //same passport AND email with different clients
+        clientToCreate = ClientDto.builder()
+                .birthday(LocalDate.parse("1998-01-06"))
+                .firstName("Kinder")
+                .lastName("Penguin")
+                .email("sigma@mmm.mumkmk")
+                .passport("6666777888")
+                .patronymicName("Abram")
+                .build();
+        this.mockMvc.perform(
+                        MockMvcRequestBuilders.post(ClientController.CREATE_CLIENT)
+                                .content(objectMapper.writeValueAsBytes(clientToCreate))
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().is4xxClientError());
+    }
 }

@@ -57,7 +57,7 @@ public class ClientServiceTests {
         assert optionalClient.get().getFirstName().equals("Burundi");
         assert optionalClient.get().getLastName().equals("Koch");
         assert optionalClient.get().getEmail().equals("sigma@mmm.mmm");
-        assert optionalClient.get().getPassport().equals("6010-000000");
+        assert optionalClient.get().getPassport().equals("6010000000");
         assert optionalClient.get().getPatronymicName().equals("");
     }
 
@@ -68,7 +68,7 @@ public class ClientServiceTests {
                 .firstName("Kinder")
                 .lastName("Penguin")
                 .email("cd@google.uk")
-                .passport("123321456")
+                .passport("1233211234")
                 .patronymicName("Abram")
                 .build();
         Client client = clientService.createClient(clientToCreate);

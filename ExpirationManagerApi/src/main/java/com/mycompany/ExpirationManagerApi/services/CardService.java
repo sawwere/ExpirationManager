@@ -18,10 +18,13 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @Service
 @RequiredArgsConstructor
 public class CardService {
+    private static final Logger logger =
+            Logger.getLogger(CardService.class.getName());
 
     private final CardRepository cardRepository;
 
@@ -57,6 +60,14 @@ public class CardService {
                     String.format("Card with number '%s' already exists", cardDto.getCardNumber())
             );
         }
+        if (cardDto.getCardNumber().length() < 16) {
+            cardDto.setCardNumber(generateUnusedCardNumber(cardDto.getCardNumber()));
+        }
+        else if (isCardNumberValid(cardDto.getCardNumber())) {
+            throw new CustomException(
+                    String.format("Card number '%s' is not valid", cardDto.getCardNumber())
+            );
+        }
         Card card = Card.builder()
                 .cardNumber(cardDto.getCardNumber())
                 .dateOfIssue(cardDto.getDateOfIssue())
@@ -65,6 +76,7 @@ public class CardService {
                 .client(optionalClient.get())
                 .build();
         cardRepository.save(card);
+        logger.info(String.format("Created card with number '%s'", card.getCardNumber()));
         return card;
     }
 
@@ -84,12 +96,14 @@ public class CardService {
             );
         card.setStatus(cardStatusDto.getCardStatus());
         cardRepository.save(card);
+        logger.info(String.format("Card '%d' status was updated to %s", card.getId(), cardStatusDto.getStatus()));
         return card;
     }
 
     @Transactional
     public void deleteCard(Long cardId) {
         findCardOrElseThrowException(cardId);
+        logger.info(String.format("Card '%d' was deleted", cardId));
         cardRepository.deleteById(cardId);
     }
 
@@ -113,15 +127,29 @@ public class CardService {
     public List<Card> findAllReadyToExpire() {
         return cardRepository.findAllCloseToExpirationByDuration(LocalDate.now(), Duration.ofDays(0));
     }
+
     //-----------------------------------------------------
     // CARD NUMBER
     //-----------------------------------------------------
+    @Transactional
+    public String generateUnusedCardNumber(String prefix) {
+        String newCardNumber = generateCardNumber(prefix);
+        int collissionCounter = 0;
+        while (findByCardNumber(newCardNumber).isPresent()) {
+            newCardNumber = generateCardNumber("");
+            collissionCounter++;
+        }
+        logger.fine("Collision happened %d times during CardNumber generation".formatted(collissionCounter));
+        return newCardNumber;
+    }
 
     /**
      * @param cardNumber string to be validated
      * @return result of applying validation Luhn algorithm
      */
     public Boolean isCardNumberValid(String cardNumber) {
+        if (cardNumber.length() != 16)
+            return false;
         int sum = 0;
         for (int i = cardNumber.length()-1; i >= 0; i--) {
             char tmp = cardNumber.charAt(i);
@@ -164,6 +192,6 @@ public class CardService {
             sum += num;
         }
         int s = (10 - (sum % 10)) % 10;
-        return combined + s;
+        return prefix + combined + s;
     }
 }
