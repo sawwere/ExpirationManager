@@ -20,7 +20,7 @@
                 <td th:text="${card.dateOfExpiration}"></td>
                 <td th:text="${card.status}"></td>
                 <td>
-                    <a th:href="@{/cards/{id}(id=${card.id})}">Аннулировать</a>
+                    <a th:href="@{/cards/{id}/status/annul(id=${card.id})}">Аннулировать</a>
                 </td>
             </tr>
             </tbody>
