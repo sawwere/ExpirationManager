@@ -22,7 +22,7 @@
                 <form action="#" th:action="@{{id}/cards(id=${client.id})}" th:object="${newCard}" method="post">
                     <div class="input-group mb-3">
                         <span class="input-group-text">Номер карты</span>
-                        <input type="text" maxlength="16" required pattern="\d[0, 16]" class="form-control" th:field="*{cardNumber}" placeholder="Оставить пустым для автогенерации"/>
+                        <input type="text" maxlength="16" required pattern="\d{0, 16}" class="form-control" th:field="*{cardNumber}" placeholder="Оставить пустым для автогенерации"/>
                     </div>
                     <div class="input-group mb-3">
                         <span class="input-group-text">Дата выпуска</span>

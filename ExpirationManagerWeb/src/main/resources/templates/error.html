@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org"  xmlns:layout="http://www.w3.org/1999/xhtml" layout:decorate="~{layouts/layout}">
+<head>
+    <title>Error</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="container">
+        <div class="error-info">
+            <p>Произошла ошибка
+            <p>Ошибка: <td th:text="${errorInfo.error}"></td>
+            <p>Описание: <td th:text="${errorInfo.description}"></td>
+        </div>
+    </div>
+</div>
+</body>
+</html>

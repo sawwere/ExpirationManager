@@ -7,7 +7,7 @@
 <div layout:fragment="content">
     <div class="container">
         <h1>Создать нового клиента</h1>
-        <div class="client_creation_block px-4">
+        <div class="client_creation_block form-group px-4">
             <form action="#" th:action="@{clients}" th:object="${newClient}" method="post">
                 <div class="input-group mb-3">
                     <span class="input-group-text">ФИО</span>
@@ -17,7 +17,7 @@
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text">Паспортные данные</span>
-                    <input type="text" required pattern="\d[10]" class="form-control" th:field="*{passport}" placeholder="СерияНомер">
+                    <input type="text" required pattern="\d{10}" class="form-control" th:field="*{passport}" placeholder="Серия и номер без пробела">
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text">Электронная почта</span>
