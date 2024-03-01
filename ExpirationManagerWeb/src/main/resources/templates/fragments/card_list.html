@@ -1,12 +1,13 @@
 <html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <body>
     <div th:fragment="card_list">
-        <table class="table caption-top table-hover">
+        <table class="table caption-top table-hover mx-auto mb-3">
             <caption>
                 Список карт
             </caption>
             <thead>
             <tr>
+                <th scope="col">Id</th>
                 <th scope="col">Номер</th>
                 <th scope="col">Дата выпуска</th>
                 <th scope="col">Действует до</th>
@@ -15,6 +16,7 @@
             </thead>
             <tbody>
             <tr th:each="card: ${cards}">
+                <td th:text="${card.id}"></td>
                 <td th:text="${card.cardNumber}"></td>
                 <td th:text="${card.dateOfIssue}"></td>
                 <td th:text="${card.dateOfExpiration}"></td>

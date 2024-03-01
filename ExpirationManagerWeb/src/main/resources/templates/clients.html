@@ -5,59 +5,59 @@
 </head>
 <body>
 <div layout:fragment="content">
-    <div class="container">
+    <div class="client_creation_block form-group px-4 pt-1 mb-3 bg-light">
         <h1>Создать нового клиента</h1>
-        <div class="client_creation_block form-group px-4">
-            <form action="#" th:action="@{clients}" th:object="${newClient}" method="post">
-                <div class="input-group mb-3">
-                    <span class="input-group-text">ФИО</span>
-                    <input type="text" required class="form-control" th:field="*{lastName}" placeholder="Фамилия"/>
-                    <input type="text" required class="form-control" th:field="*{firstName}" placeholder="Имя"/>
-                    <input type="text" class="form-control" th:field="*{patronymicName}" placeholder="Отчество"/>
-                </div>
-                <div class="input-group mb-3">
-                    <span class="input-group-text">Паспортные данные</span>
-                    <input type="text" required pattern="\d{10}" class="form-control" th:field="*{passport}" placeholder="Серия и номер без пробела">
-                </div>
-                <div class="input-group mb-3">
-                    <span class="input-group-text">Электронная почта</span>
-                    <input type="email" required class="form-control" th:field="*{email}" placeholder="abc@mail.com">
-                </div>
-                <div class="input-group mb-3">
-                    <span class="input-group-text">Дата рождения</span>
-                    <input type="date" required class="form-control" th:field="*{birthday}" placeholder="abc@mail.com">
-                </div>
-                <p><input type="submit" value="Создать" />
-            </form>
-        </div>
-        <hr>
-        <table class="table caption-top table-hover">
-            <caption>
-                Список клиентов
-            </caption>
-            <thead class="table-light">
-                <tr>
-                    <th scope="col">Фамилия</th>
-                    <th scope="col">Имя</th>
-                    <th scope="col">Отчество</th>
-                    <th scope="col">Паспорт</th>
-                    <th scope="col">Дата рождения</th>
-                </tr>
-            </thead>
-            <tbody>
-            <tr th:each="client: ${clients}">
-                <td th:text="${client.lastName}"></td>
-                <td th:text="${client.firstName}"></td>
-                <td th:text="${client.patronymicName}"></td>
-                <td th:text="${client.passport}"></td>
-                <td th:text="${client.birthday}"></td>
-                <td>
-                    <a th:href="@{clients/{id}(id=${client.id})}">Перейти</a>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+        <form action="#" th:action="@{clients}" th:object="${newClient}" method="post">
+            <div class="input-group mb-3">
+                <span class="input-group-text">ФИО</span>
+                <input type="text" required class="form-control" th:field="*{lastName}" placeholder="Фамилия"/>
+                <input type="text" required class="form-control" th:field="*{firstName}" placeholder="Имя"/>
+                <input type="text" class="form-control" th:field="*{patronymicName}" placeholder="Отчество"/>
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">Паспортные данные</span>
+                <input type="text" required pattern="\d{10}" maxlength="10" class="form-control" th:field="*{passport}" placeholder="Серия и номер без пробела">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">Электронная почта</span>
+                <input type="email" required class="form-control" th:field="*{email}" placeholder="abc@mail.com">
+            </div>
+            <div class="input-group mb-3">
+                <span class="input-group-text">Дата рождения</span>
+                <input type="date" required class="form-control" th:field="*{birthday}" placeholder="abc@mail.com">
+            </div>
+            <button type="submit" class="btn btn-success mb-3">Создать</button>
+        </form>
     </div>
+    <hr>
+    <table class="table caption-top table-hover mx-auto mb-3">
+        <caption>
+            Список клиентов
+        </caption>
+        <thead class="table-light">
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">Фамилия</th>
+                <th scope="col">Имя</th>
+                <th scope="col">Отчество</th>
+                <th scope="col">Паспорт</th>
+                <th scope="col">Дата рождения</th>
+            </tr>
+        </thead>
+        <tbody>
+        <tr th:each="client: ${clients}">
+            <td th:text="${client.id}"></td>
+            <td th:text="${client.lastName}"></td>
+            <td th:text="${client.firstName}"></td>
+            <td th:text="${client.patronymicName}"></td>
+            <td th:text="${client.passport}"></td>
+            <td th:text="${client.birthday}"></td>
+            <td>
+                <a th:href="@{clients/{id}(id=${client.id})}">Перейти</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>
 </body>
 </html>
