@@ -6,10 +6,9 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 @ControllerAdvice
-public class ApiErrorHandler extends ResponseEntityExceptionHandler {
+public class ApiErrorHandler{
     @ExceptionHandler(value = {ApiClientSideException.class})
     public ModelAndView handleApiClientSideException(ApiClientSideException ex, WebRequest request) {
         switch (ex.getHttpStatusCode().value())

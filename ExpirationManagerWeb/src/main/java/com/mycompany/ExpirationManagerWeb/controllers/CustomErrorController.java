@@ -23,9 +23,10 @@ public class CustomErrorController implements ErrorController {
         );
         return ResponseEntity
                 .status((Integer)attributes.get("status"))
-                .body(new ErrorInfo(
-                        (String) attributes.get("error"),
-                        (String) attributes.get("message"))
+                .body(ErrorInfo.builder()
+                        .error((String) attributes.get("error"))
+                        .description((String) attributes.get("message"))
+                        .build()
                 );
     }
 }

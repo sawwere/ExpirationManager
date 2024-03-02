@@ -2,6 +2,7 @@ package com.mycompany.ExpirationManagerWeb.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -15,6 +16,7 @@ public class Card {
     private Long id;
 
     @NotNull
+    @Pattern(regexp = "^\\d{0,16}$", message = "Номер карты должен состоять из 0-16 цифр")
     @JsonProperty("card_number")
     private String cardNumber;
 

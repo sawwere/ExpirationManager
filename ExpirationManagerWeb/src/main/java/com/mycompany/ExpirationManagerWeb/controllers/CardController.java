@@ -3,6 +3,7 @@ package com.mycompany.ExpirationManagerWeb.controllers;
 import com.mycompany.ExpirationManagerWeb.models.Card;
 import com.mycompany.ExpirationManagerWeb.service.RestClientService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +32,7 @@ public class CardController {
     @PostMapping(CREATE_CARD)
     public String create(
             @PathVariable (value = "client_id") Long clientId,
-            Card card) {
+            @Valid Card card) {
         restClientService.createCard(clientId, card);
         return "redirect:%s".formatted(ClientController.SHOW_CLIENT);
     }

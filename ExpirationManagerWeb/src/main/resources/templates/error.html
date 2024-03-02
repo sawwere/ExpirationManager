@@ -6,11 +6,16 @@
 <body>
 <div layout:fragment="content">
     <div class="container">
-        <div class="error-info">
-            <p>Произошла ошибка
-            <p>Ошибка: <td th:text="${errorInfo.error}"></td>
-            <p>Описание: <td th:text="${errorInfo.description}"></td>
-        </div>
+        <ul class="list-group pt-3">
+            <li class="list-group-item" th:text="|Ошибка: ${errorInfo.error}|"></li>
+            <li class="list-group-item" th:text="|Описание: ${errorInfo.description}|"></li>
+            <li class="list-group-item">
+                <ul class="list-group pt-3" th:each="constraintViolation: ${errorInfo.constraintViolations}">
+                    <li class="list-group-item" th:text="${constraintViolation.message}">
+                </ul>
+            </li>
+        </ul>
+
     </div>
 </div>
 </body>
