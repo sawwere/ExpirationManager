@@ -2,6 +2,7 @@ package com.mycompany.ExpirationManagerApi.services;
 
 import com.mycompany.ExpirationManagerApi.dto.CardDto;
 import com.mycompany.ExpirationManagerApi.dto.CardStatusDto;
+import com.mycompany.ExpirationManagerApi.exceptions.AlreadyExistsException;
 import com.mycompany.ExpirationManagerApi.exceptions.CustomException;
 import com.mycompany.ExpirationManagerApi.exceptions.InvalidCardStatusException;
 import com.mycompany.ExpirationManagerApi.exceptions.NotFoundException;
@@ -10,6 +11,7 @@ import com.mycompany.ExpirationManagerApi.storage.entities.Card;
 import com.mycompany.ExpirationManagerApi.storage.entities.Client;
 import com.mycompany.ExpirationManagerApi.storage.repositories.CardRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -48,15 +50,11 @@ public class CardService {
     }
 
     @Transactional
-    public Card createCard(Long clientId, CardDto cardDto) {
-        var optionalClient = clientService.findClient(clientId);
-        if (optionalClient.isEmpty()) {
-            throw new NotFoundException(
-                    String.format("Client with id '%s' doesn't exist", clientId)
-            );
-        }
+    public Card createCard(Long clientId, @Valid CardDto cardDto) {
+        Client client = clientService.findClientOrElseThrowException(clientId);
+
         if (cardRepository.findByCardNumber(cardDto.getCardNumber()).isPresent()) {
-            throw new CustomException(
+            throw new AlreadyExistsException(
                     String.format("Card with number '%s' already exists", cardDto.getCardNumber())
             );
         }
@@ -73,10 +71,10 @@ public class CardService {
                 .dateOfIssue(cardDto.getDateOfIssue())
                 .dateOfExpiration(cardDto.getDateOfExpiration())
                 .status(CardStatus.OK)
-                .client(optionalClient.get())
+                .client(client)
                 .build();
         cardRepository.save(card);
-        logger.info(String.format("Created card with number '%s'", card.getCardNumber()));
+        logger.info(String.format("Created card with id '%d'", card.getId()));
         return card;
     }
 
@@ -103,8 +101,8 @@ public class CardService {
     @Transactional
     public void deleteCard(Long cardId) {
         findCardOrElseThrowException(cardId);
-        logger.info(String.format("Card '%d' was deleted", cardId));
         cardRepository.deleteById(cardId);
+        logger.info("Deleted card with id '%d'".formatted(cardId));
     }
 
     @Transactional

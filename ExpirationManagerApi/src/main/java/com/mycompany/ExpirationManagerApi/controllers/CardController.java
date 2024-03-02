@@ -1,11 +1,11 @@
 package com.mycompany.ExpirationManagerApi.controllers;
 
-import com.mycompany.ExpirationManagerApi.controllers.helper.ControllerHelper;
 import com.mycompany.ExpirationManagerApi.dto.CardDto;
 import com.mycompany.ExpirationManagerApi.dto.CardStatusDto;
 import com.mycompany.ExpirationManagerApi.factories.CardDtoFactory;
 import com.mycompany.ExpirationManagerApi.services.CardService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,8 +18,6 @@ public class CardController {
     private final CardService cardService;
 
     private final CardDtoFactory cardDtoFactory;
-
-    private final ControllerHelper controllerHelper;
 
     public static final String CREATE_CARD = "/api/clients/{client_id}/cards";
     public static final String FIND_CARDS_BY_CLIENT = "/api/clients/{client_id}/cards";
@@ -46,10 +44,10 @@ public class CardController {
         return cardDtoFactory.make(cardService.findCardOrElseThrowException(cardId));
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(DELETE_CARD)
-    public String deleteCard(@PathVariable(value = "card_id") Long cardId) {
+    public void deleteCard(@PathVariable(value = "card_id") Long cardId) {
         cardService.deleteCard(cardId);
-        return "";
     }
 
     @PostMapping(UPDATE_CARD_STATUS)

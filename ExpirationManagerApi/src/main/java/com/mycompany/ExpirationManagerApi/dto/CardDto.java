@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mycompany.ExpirationManagerApi.storage.CardStatus;
 import com.mycompany.ExpirationManagerApi.storage.entities.Card;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class CardDto {
     private Long id;
 
     @NotNull
+    @Pattern(regexp = "\\d{0,16}", message = "Номер карты должен состоять из 0-16 цифр")
     @JsonProperty("card_number")
     private String cardNumber;
 

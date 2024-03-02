@@ -1,7 +1,6 @@
 package com.mycompany.ExpirationManagerApi.scheduled;
 
 import com.mycompany.ExpirationManagerApi.services.CardService;
-import com.mycompany.ExpirationManagerApi.services.ClientService;
 import com.mycompany.ExpirationManagerApi.services.CustomEmailService;
 import com.mycompany.ExpirationManagerApi.storage.entities.Card;
 import com.mycompany.ExpirationManagerApi.storage.entities.Client;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @Component
@@ -21,7 +19,6 @@ public class NotificationScheduler {
     private static final Logger logger =
             Logger.getLogger(NotificationScheduler.class.getName());
 
-    private final ClientService clientService;
     private final CardService cardService;
     private final CustomEmailService emailService;
 
@@ -42,10 +39,10 @@ public class NotificationScheduler {
     @Scheduled(fixedRateString = "${interval}")
     public void sendNotificationsAboutCardExpiration() {
         List<Card> closeToExpire = cardService.findAllCloseToExpire();
-        System.out.println(closeToExpire.size());
+        logger.info(String.format("Cards to be expired: %d", closeToExpire.size()));
         for (Card card : closeToExpire) {
             Client client = card.getClient();
-            logger.log(Level.INFO, String.format("Send email to %s" , client.getEmail()));
+            logger.info(String.format("Send email to %s" , client.getEmail()));
             emailService.sendSimpleEmail(
                     client.getEmail(),
                     "Истечение срока карты",

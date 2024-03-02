@@ -1,7 +1,7 @@
 package com.mycompany.ExpirationManagerApi.services;
 
 import com.mycompany.ExpirationManagerApi.dto.ClientDto;
-import com.mycompany.ExpirationManagerApi.exceptions.CustomException;
+import com.mycompany.ExpirationManagerApi.exceptions.AlreadyExistsException;
 import com.mycompany.ExpirationManagerApi.exceptions.NotFoundException;
 import com.mycompany.ExpirationManagerApi.storage.entities.Client;
 import com.mycompany.ExpirationManagerApi.storage.repositories.ClientRepository;
@@ -13,10 +13,13 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @Service
 @RequiredArgsConstructor
 public class ClientService {
+    private static final Logger logger =
+            Logger.getLogger(ClientService.class.getName());
 
     private final ClientRepository clientRepository;
 
@@ -36,19 +39,20 @@ public class ClientService {
     public Client createClient(@Valid ClientDto clientDto) {
         var optionalClient = clientRepository.findFirstByPassportOrEmail(clientDto.getPassport(), clientDto.getEmail());
         if (optionalClient.isPresent()) {
-            throw new CustomException(
+            throw new AlreadyExistsException(
                     String.format("Client with given info already exists with id '%d'",
                             optionalClient.get().getId()));
         }
         Client client = Client.builder()
                 .passport(clientDto.getPassport())
                 .email(clientDto.getEmail())
-                .firstName(clientDto.getFirstName())
-                .lastName(clientDto.getLastName())
-                .patronymicName(clientDto.getPatronymicName())
+                .firstName(clientDto.getFirstName().toUpperCase())
+                .lastName(clientDto.getLastName().toUpperCase())
+                .patronymicName(clientDto.getPatronymicName().toUpperCase())
                 .birthday(clientDto.getBirthday())
                 .build();
         clientRepository.save(client);
+        logger.info("Created client with id '%d'".formatted(client.getId()));
         return client;
     }
 
@@ -77,6 +81,7 @@ public class ClientService {
     public void deleteClient(Long clientId) {
         Client client = findClientOrElseThrowException(clientId);
         clientRepository.deleteById(clientId);
+        logger.info("Deleted client with id '%d'".formatted(clientId));
     }
 
     @Transactional

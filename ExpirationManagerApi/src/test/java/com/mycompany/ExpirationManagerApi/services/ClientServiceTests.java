@@ -65,11 +65,11 @@ public class ClientServiceTests {
     void testCreate() throws Exception {
         ClientDto clientToCreate = ClientDto.builder()
                 .birthday(LocalDate.parse("1998-01-06"))
-                .firstName("Kinder")
-                .lastName("Penguin")
+                .firstName("Kinder".toUpperCase())
+                .lastName("Penguin".toUpperCase())
                 .email("cd@google.uk")
                 .passport("1233211234")
-                .patronymicName("Abram")
+                .patronymicName("Abram".toUpperCase())
                 .build();
         Client client = clientService.createClient(clientToCreate);
         clientToCreate.setId(client.getId());

@@ -55,9 +55,8 @@ public class ClientController {
 
     @DeleteMapping(DELETE_CLIENT)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public String deleteClient(@PathVariable("client_id") Long clientId) {
+    public void deleteClient(@PathVariable("client_id") Long clientId) {
         clientService.deleteClient(clientId);
-        return "";
     }
 
     @GetMapping(FIND_ALL_CLIENTS)
