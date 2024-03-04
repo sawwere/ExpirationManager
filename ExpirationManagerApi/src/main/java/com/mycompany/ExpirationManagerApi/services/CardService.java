@@ -61,11 +61,11 @@ public class CardService {
         if (cardDto.getCardNumber().length() < 16) {
             cardDto.setCardNumber(generateUnusedCardNumber(cardDto.getCardNumber()));
         }
-        else if (isCardNumberValid(cardDto.getCardNumber())) {
-            throw new CustomException(
-                    String.format("Card number '%s' is not valid", cardDto.getCardNumber())
-            );
-        }
+        else if (!isCardNumberValid(cardDto.getCardNumber())) {
+                throw new CustomException(
+                        String.format("Card number '%s' is not valid", cardDto.getCardNumber())
+                );
+            }
         Card card = Card.builder()
                 .cardNumber(cardDto.getCardNumber())
                 .dateOfIssue(cardDto.getDateOfIssue())
@@ -136,6 +136,7 @@ public class CardService {
         while (findByCardNumber(newCardNumber).isPresent()) {
             newCardNumber = generateCardNumber("");
             collissionCounter++;
+            System.out.println("OOPS");
         }
         logger.fine("Collision happened %d times during CardNumber generation".formatted(collissionCounter));
         return newCardNumber;
@@ -149,17 +150,18 @@ public class CardService {
         if (cardNumber.length() != 16)
             return false;
         int sum = 0;
-        for (int i = cardNumber.length()-1; i >= 0; i--) {
+        for (int i = 0; i < cardNumber.length(); i++) {
             char tmp = cardNumber.charAt(i);
             int num = tmp - '0';
             if (i % 2 == 0) {
                 num *= 2;
+                if (num > 9)
+                    num -= 9;
             }
             sum += num;
         }
         return sum % 10 == 0;
     }
-
 
     /**
      * @param prefix generated card number starts with that string (1-15 symbols)
@@ -169,27 +171,33 @@ public class CardService {
         if (prefix.length() > 15)
             throw new IllegalArgumentException("Card number can not contain more than 16 digits");
         //actually card number has 16 digits(in general), but one is reserved to be the check digit
-        int neededLength = 15 - prefix.length();
+        int wantedLength = 15;
 
         // up to 9 digits
         String nanoSeconds = String.valueOf(Instant.now().getNano());
         String seconds = String.valueOf(Instant.now().getEpochSecond());
-        String combined = nanoSeconds+seconds;
-        if (combined.length() < neededLength) {
-            combined += "0".repeat(neededLength - combined.length());
+        String combined = prefix+nanoSeconds+seconds;
+        if (combined.length() < wantedLength) {
+            combined += "0".repeat(wantedLength - combined.length());
         }
-        else if (combined.length() > neededLength) {
-            combined = combined.substring(0, neededLength);
+        else if (combined.length() > wantedLength) {
+            combined = combined.substring(0, wantedLength);
         }
+        return combined + generateCheckDigit(combined);
+    }
+
+    private char generateCheckDigit(String cardNumber) {
         int sum = 0;
-        for (int i = neededLength-1; i >= 0; i--) {
-            int num = combined.charAt(i) - '0';
-            if (i % 2 == 0) {
+        int mod = cardNumber.length() % 2;
+        for (int i = 0; i < cardNumber.length(); i++) {
+            int num = cardNumber.charAt(i) - '0';
+            if (i % 2 != mod) {
                 num *= 2;
+                if (num > 9)
+                    num -= 9;
             }
             sum += num;
         }
-        int s = (10 - (sum % 10)) % 10;
-        return prefix + combined + s;
+        return (char)((10 - (sum % 10)) % 10 + '0');
     }
 }

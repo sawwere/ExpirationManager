@@ -131,7 +131,7 @@ public class CardControllerTests {
     @Test
     void testCreate() throws Exception {
         CardDto cardDto = CardDto.builder()
-                .cardNumber("9879671001709030")
+                .cardNumber("9879671001709036")
                 .dateOfExpiration(LocalDate.parse("2024-11-24"))
                 .dateOfIssue(LocalDate.parse("2020-11-11"))
                 .build();

@@ -38,6 +38,7 @@ public class ExpirationScheduler {
     @Scheduled(fixedRateString = "${interval}")
     public void makeCardsExpired() {
         List<Card> readyToExpire = cardService.findAllReadyToExpire();
+        logger.info(String.format("Cards to be set expired: %d", readyToExpire.size()));
         for (Card card : readyToExpire) {
             cardService.updateCardStatus(card.getId(), CardStatusDto.expired());
             Card newCard = generateNewCard(card.getClient().getId(), card);

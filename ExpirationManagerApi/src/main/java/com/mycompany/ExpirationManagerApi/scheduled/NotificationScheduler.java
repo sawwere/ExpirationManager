@@ -39,10 +39,10 @@ public class NotificationScheduler {
     @Scheduled(fixedRateString = "${interval}")
     public void sendNotificationsAboutCardExpiration() {
         List<Card> closeToExpire = cardService.findAllCloseToExpire();
-        logger.info(String.format("Cards to be expired: %d", closeToExpire.size()));
+        logger.info(String.format("Need to send %d expiration notifications", closeToExpire.size()));
         for (Card card : closeToExpire) {
             Client client = card.getClient();
-            logger.info(String.format("Send email to %s" , client.getEmail()));
+            logger.info(String.format("Sent email to %s" , client.getEmail()));
             emailService.sendSimpleEmail(
                     client.getEmail(),
                     "Истечение срока карты",
