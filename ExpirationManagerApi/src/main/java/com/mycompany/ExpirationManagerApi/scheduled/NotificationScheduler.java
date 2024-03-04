@@ -30,7 +30,7 @@ public class NotificationScheduler {
                 dateOfExpiration.getYear()
         );
         String hidedCardNumber = String.format("****-%s",
-                card.getCardNumber().substring(card.getCardNumber().length() - 5));
+                card.getCardNumber().substring(card.getCardNumber().length() - 4));
         return String.format("%s, срок вашей карты %s заканчивается %s, обратитесь в ближайшее отделение для получения новой карты.",
                 client.getFirstName(), hidedCardNumber, niceDate);
     }

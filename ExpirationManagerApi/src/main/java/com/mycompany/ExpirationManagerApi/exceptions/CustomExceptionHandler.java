@@ -22,6 +22,28 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         return handleException(ex, request);
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(ValidationException.class)
+    protected ResponseEntity<Object> handleValidationException(
+            ValidationException ex,
+            WebRequest request) {
+        List<ConstraintViolation> violations = ex.getConstraintViolations().stream()
+                .map(violation ->
+                        new ConstraintViolation(
+                                violation.getField(),
+                                violation.getMessage()
+                        )
+                )
+                .toList();
+        return ResponseEntity.badRequest().body(
+                ErrorInfo.builder()
+                        .error("Validation error")
+                        .description(ex.getMessage())
+                        .constraintViolations(violations)
+                        .build()
+        );
+    }
+
     @Override
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleMethodArgumentNotValid(

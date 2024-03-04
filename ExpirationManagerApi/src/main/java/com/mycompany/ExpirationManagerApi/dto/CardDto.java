@@ -2,7 +2,6 @@ package com.mycompany.ExpirationManagerApi.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mycompany.ExpirationManagerApi.storage.CardStatus;
-import com.mycompany.ExpirationManagerApi.storage.entities.Card;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -31,5 +30,5 @@ public class CardDto {
     @JsonProperty("date_of_expiration")
     private LocalDate dateOfExpiration;
 
-    private String status = CardStatus.OK.toString();
+    private CardStatus status = CardStatus.OK;
 }

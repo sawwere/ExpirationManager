@@ -2,6 +2,8 @@ package com.mycompany.ExpirationManagerApi.scheduled;
 
 import com.mycompany.ExpirationManagerApi.dto.CardDto;
 import com.mycompany.ExpirationManagerApi.dto.CardStatusDto;
+import com.mycompany.ExpirationManagerApi.exceptions.InvalidCardStatusException;
+import com.mycompany.ExpirationManagerApi.exceptions.NotFoundException;
 import com.mycompany.ExpirationManagerApi.services.CardService;
 import com.mycompany.ExpirationManagerApi.storage.CardStatus;
 import com.mycompany.ExpirationManagerApi.storage.entities.Card;
@@ -29,7 +31,7 @@ public class ExpirationScheduler {
                 .cardNumber(cardService.generateUnusedCardNumber(""))
                 .dateOfIssue(LocalDate.now())
                 .dateOfExpiration(LocalDate.now().plusYears(4))
-                .status(CardStatus.OK.toString())
+                .status(CardStatus.OK)
                 .build();
         return cardService.createCard(clientId, newCard);
     }
@@ -40,10 +42,22 @@ public class ExpirationScheduler {
         List<Card> readyToExpire = cardService.findAllReadyToExpire();
         logger.info(String.format("Cards to be set expired: %d", readyToExpire.size()));
         for (Card card : readyToExpire) {
-            cardService.updateCardStatus(card.getId(), CardStatusDto.expired());
-            Card newCard = generateNewCard(card.getClient().getId(), card);
-            logger.info("Generated new card %s to replace the old %s"
-                    .formatted(newCard.getCardNumber(), card.getCardNumber()));
+            try {
+                cardService.updateCardStatus(card.getId(), CardStatusDto.expired());
+            } catch (NotFoundException notFoundException) {
+                logger.warning("Attempted to make expired already deleted card '%s'"
+                        .formatted(card.getCardNumber()));
+            }
+            catch (InvalidCardStatusException invalidCardStatusException) {
+                logger.warning("Attempted to make expired already expired card '%s'"
+                        .formatted(card.getCardNumber()));
+            }
+            finally {
+                Card newCard = generateNewCard(card.getClient().getId(), card);
+                logger.info("Generated new card %s to replace the old %s"
+                        .formatted(newCard.getCardNumber(), card.getCardNumber()));
+            }
+
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.mycompany.ExpirationManagerApi.exceptions;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,5 +18,6 @@ public class ErrorInfo {
     private String description;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonProperty("constraint_violations")
     private List<ConstraintViolation> constraintViolations;
 }

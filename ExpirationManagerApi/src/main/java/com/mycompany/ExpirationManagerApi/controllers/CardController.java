@@ -4,6 +4,7 @@ import com.mycompany.ExpirationManagerApi.dto.CardDto;
 import com.mycompany.ExpirationManagerApi.dto.CardStatusDto;
 import com.mycompany.ExpirationManagerApi.factories.CardDtoFactory;
 import com.mycompany.ExpirationManagerApi.services.CardService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,6 @@ public class CardController {
     public static final String CREATE_CARD = "/api/clients/{client_id}/cards";
     public static final String FIND_CARDS_BY_CLIENT = "/api/clients/{client_id}/cards";
     public static final String FIND_CARD = "/api/cards/{card_id}";
-    public static final String UPDATE_CARD = "/api/cards/{card_id}";
     public static final String DELETE_CARD = "/api/cards/{card_id}";
     public static final String UPDATE_CARD_STATUS = "/api/cards/{card_id}/status";
     public static final String FIND_ALL_CARDS = "/api/cards";
@@ -53,7 +53,7 @@ public class CardController {
     @PostMapping(UPDATE_CARD_STATUS)
     public CardDto updateCardStatus(
             @PathVariable(value = "card_id") Long cardId,
-            @RequestBody CardStatusDto cardStatusDto) {
+            @Valid @RequestBody CardStatusDto cardStatusDto) {
         return cardDtoFactory.make(cardService.updateCardStatus(
                 cardId,
                 cardStatusDto)

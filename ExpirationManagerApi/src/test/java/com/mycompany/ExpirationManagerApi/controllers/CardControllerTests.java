@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mycompany.ExpirationManagerApi.Application;
 import com.mycompany.ExpirationManagerApi.dto.CardDto;
 import com.mycompany.ExpirationManagerApi.dto.CardStatusDto;
+import com.mycompany.ExpirationManagerApi.storage.CardStatus;
 import com.mycompany.ExpirationManagerApi.storage.entities.Card;
 import jakarta.transaction.Transactional;
 import org.checkerframework.checker.units.qual.C;
@@ -105,7 +106,7 @@ public class CardControllerTests {
                 .cardNumber("9879671001709031")
                 .dateOfExpiration(LocalDate.parse("2024-11-24"))
                 .dateOfIssue(LocalDate.parse("2020-11-11"))
-                .status("OK")
+                .status(CardStatus.OK)
                 .build());
     }
 

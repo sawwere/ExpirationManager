@@ -2,10 +2,7 @@ package com.mycompany.ExpirationManagerApi.services;
 
 import com.mycompany.ExpirationManagerApi.dto.CardDto;
 import com.mycompany.ExpirationManagerApi.dto.CardStatusDto;
-import com.mycompany.ExpirationManagerApi.exceptions.AlreadyExistsException;
-import com.mycompany.ExpirationManagerApi.exceptions.CustomException;
-import com.mycompany.ExpirationManagerApi.exceptions.InvalidCardStatusException;
-import com.mycompany.ExpirationManagerApi.exceptions.NotFoundException;
+import com.mycompany.ExpirationManagerApi.exceptions.*;
 import com.mycompany.ExpirationManagerApi.storage.CardStatus;
 import com.mycompany.ExpirationManagerApi.storage.entities.Card;
 import com.mycompany.ExpirationManagerApi.storage.entities.Client;
@@ -18,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -52,20 +50,22 @@ public class CardService {
     @Transactional
     public Card createCard(Long clientId, @Valid CardDto cardDto) {
         Client client = clientService.findClientOrElseThrowException(clientId);
+        validateIssueIsBeforeExpiration(cardDto.getDateOfIssue(), cardDto.getDateOfExpiration());
+        validateCardNumberIsUnique(cardDto.getCardNumber());
 
-        if (cardRepository.findByCardNumber(cardDto.getCardNumber()).isPresent()) {
-            throw new AlreadyExistsException(
-                    String.format("Card with number '%s' already exists", cardDto.getCardNumber())
-            );
-        }
         if (cardDto.getCardNumber().length() < 16) {
             cardDto.setCardNumber(generateUnusedCardNumber(cardDto.getCardNumber()));
         }
         else if (!isCardNumberValid(cardDto.getCardNumber())) {
-                throw new CustomException(
-                        String.format("Card number '%s' is not valid", cardDto.getCardNumber())
-                );
-            }
+            ConstraintViolation cv = ConstraintViolation.builder()
+                    .field("card_number")
+                    .message("Card Number must consist of no more than 16 digits")
+                    .build();
+            throw new ValidationException(
+                    "Card Number must consist of no more than 16 digits",
+                    Collections.singleton(cv)
+            );
+        }
         Card card = Card.builder()
                 .cardNumber(cardDto.getCardNumber())
                 .dateOfIssue(cardDto.getDateOfIssue())
@@ -80,10 +80,6 @@ public class CardService {
 
     @Transactional
     public Card updateCardStatus(Long cardId, CardStatusDto cardStatusDto) {
-        if (!cardStatusDto.isValid())
-            throw new InvalidCardStatusException(
-                    String.format("Invalid card status '%s' was given", cardStatusDto.getStatus())
-            );
         Card card = findCardOrElseThrowException(cardId);
         if (card.getStatus() != CardStatus.OK)
             throw new InvalidCardStatusException(
@@ -92,7 +88,7 @@ public class CardService {
                         cardStatusDto.getStatus(),
                         card.getStatus().toString())
             );
-        card.setStatus(cardStatusDto.getCardStatus());
+        card.setStatus(cardStatusDto.getStatus());
         cardRepository.save(card);
         logger.info(String.format("Card '%d' status was updated to %s", card.getId(), cardStatusDto.getStatus()));
         return card;
@@ -124,6 +120,32 @@ public class CardService {
     @Transactional
     public List<Card> findAllReadyToExpire() {
         return cardRepository.findAllCloseToExpirationByDuration(LocalDate.now(), Duration.ofDays(0));
+    }
+
+    private void validateCardNumberIsUnique(String cardNumber) {
+        if (cardRepository.findByCardNumber(cardNumber).isPresent()) {
+            ConstraintViolation cv = ConstraintViolation.builder()
+                    .field("card_number")
+                    .message("Card Number must be a unique value")
+                    .build();
+            throw new ValidationException(
+                    String.format("Card with number '%s' already exists", cardNumber),
+                    Collections.singleton(cv)
+            );
+        }
+    }
+
+    private void validateIssueIsBeforeExpiration(LocalDate dateOfIssue, LocalDate dateOfExpiration) {
+        if (dateOfIssue.isAfter(dateOfExpiration)) {
+            ConstraintViolation cv = ConstraintViolation.builder()
+                    .field("date_of_expiration")
+                    .message("Date of expiration cannot be before date of issue")
+                    .build();
+            throw new ValidationException(
+                    "Invalid dates provided",
+                    Collections.singleton(cv)
+            );
+        }
     }
 
     //-----------------------------------------------------

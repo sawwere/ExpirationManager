@@ -1,7 +1,8 @@
 package com.mycompany.ExpirationManagerApi.services;
 
 import com.mycompany.ExpirationManagerApi.dto.ClientDto;
-import com.mycompany.ExpirationManagerApi.exceptions.AlreadyExistsException;
+import com.mycompany.ExpirationManagerApi.exceptions.ConstraintViolation;
+import com.mycompany.ExpirationManagerApi.exceptions.ValidationException;
 import com.mycompany.ExpirationManagerApi.exceptions.NotFoundException;
 import com.mycompany.ExpirationManagerApi.storage.entities.Client;
 import com.mycompany.ExpirationManagerApi.storage.repositories.ClientRepository;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
@@ -37,12 +39,7 @@ public class ClientService {
 
     @Transactional
     public Client createClient(@Valid ClientDto clientDto) {
-        var optionalClient = clientRepository.findFirstByPassportOrEmail(clientDto.getPassport(), clientDto.getEmail());
-        if (optionalClient.isPresent()) {
-            throw new AlreadyExistsException(
-                    String.format("Client with given info already exists with id '%d'",
-                            optionalClient.get().getId()));
-        }
+        validatePassportAndEmailAreUnique(clientDto);
         Client client = Client.builder()
                 .passport(clientDto.getPassport())
                 .email(clientDto.getEmail())
@@ -57,27 +54,6 @@ public class ClientService {
     }
 
     @Transactional
-    public Client updateClient(Long clientId,
-                             Optional<String> passport,
-                             Optional<String> email,
-                             Optional<String> firstName,
-                             Optional<String> lastName,
-                             Optional<String> patronymicName,
-                             Optional<LocalDate> birthdate) {
-        Client client = findClientOrElseThrowException(clientId);
-        client = Client.builder()
-                .passport(passport.orElse(client.getPassport()))
-                .email(email.orElse(client.getEmail()))
-                .firstName(firstName.orElse(client.getFirstName()))
-                .lastName(lastName.orElse(client.getLastName()))
-                .patronymicName(patronymicName.orElse(client.getPatronymicName()))
-                .birthday(birthdate.orElse(client.getBirthday()))
-                .build();
-        clientRepository.save(client);
-        return client;
-    }
-
-    @Transactional
     public void deleteClient(Long clientId) {
         Client client = findClientOrElseThrowException(clientId);
         clientRepository.deleteById(clientId);
@@ -87,5 +63,32 @@ public class ClientService {
     @Transactional
     public List<Client> findAll() {
         return clientRepository.streamAllBy().toList();
+    }
+
+    private void validatePassportAndEmailAreUnique(ClientDto clientDto) {
+        var optionalClient = clientRepository.findFirstByPassportOrEmail(clientDto.getPassport(), clientDto.getEmail());
+        if (optionalClient.isPresent()) {
+            ArrayList<ConstraintViolation> cvList = new ArrayList<>(2);
+            if (clientDto.getPassport().equals(optionalClient.get().getPassport()))
+            {
+                cvList.add(ConstraintViolation.builder()
+                        .field("passport")
+                        .message("Passport must be a unique value")
+                        .build());
+
+            }
+            if (clientDto.getEmail().equals(optionalClient.get().getEmail()))
+            {
+                cvList.add(ConstraintViolation.builder()
+                        .field("email")
+                        .message("Email must be a unique value")
+                        .build());
+            }
+            throw new ValidationException(
+                    String.format("Client with given info already exists with id '%d'",
+                            optionalClient.get().getId()),
+                    cvList
+            );
+        }
     }
 }
