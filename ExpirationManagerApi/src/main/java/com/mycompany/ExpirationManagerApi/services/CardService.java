@@ -51,21 +51,23 @@ public class CardService {
     public Card createCard(Long clientId, @Valid CardDto cardDto) {
         Client client = clientService.findClientOrElseThrowException(clientId);
         validateIssueIsBeforeExpiration(cardDto.getDateOfIssue(), cardDto.getDateOfExpiration());
-        validateCardNumberIsUnique(cardDto.getCardNumber());
 
-        if (cardDto.getCardNumber().length() < 16) {
+        if (cardDto.getCardNumber().isEmpty()) {
             cardDto.setCardNumber(generateUnusedCardNumber(cardDto.getCardNumber()));
+        } else {
+            if (!isCardNumberValid(cardDto.getCardNumber())) {
+                ConstraintViolation cv = ConstraintViolation.builder()
+                        .field("card_number")
+                        .message("Проверьте правильность введенных данных")
+                        .build();
+                throw new ValidationException(
+                        "Card Number must consist of no more than 16 digits",
+                        Collections.singleton(cv)
+                );
+            }
+            validateCardNumberIsUnique(cardDto.getCardNumber());
         }
-        else if (!isCardNumberValid(cardDto.getCardNumber())) {
-            ConstraintViolation cv = ConstraintViolation.builder()
-                    .field("card_number")
-                    .message("Card Number must consist of no more than 16 digits")
-                    .build();
-            throw new ValidationException(
-                    "Card Number must consist of no more than 16 digits",
-                    Collections.singleton(cv)
-            );
-        }
+
         Card card = Card.builder()
                 .cardNumber(cardDto.getCardNumber())
                 .dateOfIssue(cardDto.getDateOfIssue())

@@ -18,7 +18,7 @@ public class CardDto {
     private Long id;
 
     @NotNull
-    @Pattern(regexp = "\\d{0,16}", message = "Номер карты должен состоять из 0-16 цифр")
+    @Pattern(regexp = "\\d{16}|^$", message = "Номер карты должен состоять из 0 или 16 цифр")
     @JsonProperty("card_number")
     private String cardNumber;
 
