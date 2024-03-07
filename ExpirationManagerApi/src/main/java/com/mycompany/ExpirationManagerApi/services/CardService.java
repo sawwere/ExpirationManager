@@ -61,7 +61,7 @@ public class CardService {
                         .message("Проверьте правильность введенных данных")
                         .build();
                 throw new ValidationException(
-                        "Card Number must consist of no more than 16 digits",
+                        "Invalid card number",
                         Collections.singleton(cv)
                 );
             }
@@ -160,7 +160,6 @@ public class CardService {
         while (findByCardNumber(newCardNumber).isPresent()) {
             newCardNumber = generateCardNumber("");
             collissionCounter++;
-            System.out.println("OOPS");
         }
         logger.fine("Collision happened %d times during CardNumber generation".formatted(collissionCounter));
         return newCardNumber;

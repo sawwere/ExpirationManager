@@ -1,3 +1,11 @@
 package com.mycompany.ExpirationManagerWeb.models;
 
-public enum CardStatus { OK, ANNULLED, EXPIRED}
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public enum CardStatus {
+    @JsonProperty("OK") OK,
+
+    @JsonProperty("EXPIRED") EXPIRED,
+
+    @JsonProperty("ANNULLED") ANNULLED;
+}

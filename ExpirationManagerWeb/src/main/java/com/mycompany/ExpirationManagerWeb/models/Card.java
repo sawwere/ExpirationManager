@@ -7,16 +7,15 @@ import lombok.*;
 
 import java.time.LocalDate;
 
+@Data
 @Builder
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Card {
     private Long id;
 
     @NotNull
-    @Pattern(regexp = "^\\d{0,16}$", message = "Номер карты должен состоять из 0-16 цифр")
+    @Pattern(regexp = "\\d{16}|^$", message = "Номер карты должен состоять из 0 или 16 цифр")
     @JsonProperty("card_number")
     private String cardNumber;
 
@@ -28,6 +27,6 @@ public class Card {
     @JsonProperty("date_of_expiration")
     private LocalDate dateOfExpiration;
 
-
-    private CardStatus status;
+    private CardStatus status = CardStatus.OK;
 }
+

@@ -1,46 +1,36 @@
 package com.mycompany.ExpirationManagerWeb.dto;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.mycompany.ExpirationManagerWeb.models.CardStatus;
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Builder
 @Getter
-@NoArgsConstructor
 public class CardStatusDto {
-    @NotNull
-    private String status;
+    private CardStatus status;
 
     public static CardStatusDto ok() {
-        return CardStatusDto.builder().status(CardStatus.OK.toString()).build();
+        return CardStatusDto.builder().status(CardStatus.OK).build();
     }
 
     public static CardStatusDto annulled() {
-        return CardStatusDto.builder().status(CardStatus.ANNULLED.toString()).build();
+        return CardStatusDto.builder().status(CardStatus.ANNULLED).build();
     }
 
     public static CardStatusDto expired() {
-        return CardStatusDto.builder().status(CardStatus.EXPIRED.toString()).build();
+        return CardStatusDto.builder().status(CardStatus.EXPIRED).build();
     }
 
-    public Boolean isValid() {
-        String upperCased = status.toUpperCase();
-        for (var cs : CardStatus.values())
-            if (cs.toString().equals(upperCased)) {
-                return true;
-            }
+//    @JsonCreator
+//    public CardStatusDto(@JsonProperty(value = "status") String status) {
+//        status = status.toUpperCase();
+//        this.status = CardStatus.valueOf(status);
+//    }
 
-        return false;
-    }
-
-    public CardStatusDto(String status) {
-        CardStatus.valueOf(status.toUpperCase());
+    @JsonCreator
+    public CardStatusDto(@JsonProperty(value = "status") CardStatus status) {
         this.status = status;
-    }
-
-    public CardStatus getCardStatus() {
-        return CardStatus.valueOf(status.toUpperCase());
     }
 }

@@ -7,10 +7,12 @@ import com.mycompany.ExpirationManagerWeb.exceptions.ApiNotRespondingException;
 import com.mycompany.ExpirationManagerWeb.exceptions.ErrorInfo;
 import com.mycompany.ExpirationManagerWeb.models.Card;
 import com.mycompany.ExpirationManagerWeb.models.Client;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
@@ -20,8 +22,12 @@ import java.util.List;
 public class RestClientService {
     private final RestClient restClient;
     private final ObjectMapper objectMapper;
-    public RestClientService() {
+
+    public RestClientService(@Value("${api.baseUrl}") String baseUrl) {
         objectMapper = new ObjectMapper();
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(500);
+        factory.setReadTimeout(1500);
         restClient = RestClient.builder()
                 .defaultHeader(HttpHeaders.ACCEPT, String.valueOf(MediaType.APPLICATION_JSON))
                 .defaultStatusHandler(HttpStatusCode::is4xxClientError, (request, response) -> {
@@ -30,9 +36,10 @@ public class RestClientService {
                     throw new ApiClientSideException(statusCode, errorInfo);
                 })
                 .defaultStatusHandler(HttpStatusCode::is5xxServerError,  (request, response) -> {
-                    throw new ApiNotRespondingException("Server is not responding");
+                    throw new ApiNotRespondingException("Произошла внутренняя ошибка сервера");
                 })
-                .baseUrl("http://localhost:8080/api/")
+                .baseUrl(baseUrl)
+                .requestFactory(factory)
                 .build();
     }
 

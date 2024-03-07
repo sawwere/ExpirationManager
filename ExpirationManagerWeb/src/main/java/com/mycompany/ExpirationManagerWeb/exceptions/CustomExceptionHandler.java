@@ -1,15 +1,14 @@
 package com.mycompany.ExpirationManagerWeb.exceptions;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.nio.channels.ClosedChannelException;
 import java.util.List;
 
 @ControllerAdvice
@@ -19,19 +18,19 @@ public class CustomExceptionHandler {
     protected ModelAndView handleAllExceptions(Exception ex, WebRequest request) throws Exception {
         ModelAndView mav = new ModelAndView("error");
         ErrorInfo errorInfo = ErrorInfo.builder()
-                .error("Не удалось получить данные от сервера")
+                .error("Не удалось обработать запрос")
                 .description(ex.getMessage())
                 .build();
         mav.addObject("errorInfo", errorInfo);
         return mav;
     }
     @ResponseStatus(HttpStatus.GATEWAY_TIMEOUT)
-    @ExceptionHandler(value = {ClosedChannelException.class, ApiNotRespondingException.class})
-    protected ModelAndView handleApiServerSideException(ClosedChannelException ex, WebRequest request) {
+    @ExceptionHandler(value = {ResourceAccessException.class, ApiNotRespondingException.class })
+    protected ModelAndView handleApiServerSideException(RuntimeException ex, WebRequest request) {
         ModelAndView mav = new ModelAndView("error");
         ErrorInfo errorInfo = ErrorInfo.builder()
                 .error("Не удалось получить данные от сервера")
-                .description(ex.getMessage() == null ? "Нет подключения к серверу" : ex.getMessage())
+                .description("Нет подключения к серверу")
                 .build();
         mav.addObject("errorInfo", errorInfo);
         return mav;
@@ -51,7 +50,7 @@ public class CustomExceptionHandler {
                 .toList();
 
         ErrorInfo errorInfo = ErrorInfo.builder()
-                .error("Validation error")
+                .error("Ошибка валидации")
                 .description("Введены некорректные данные")
                 .constraintViolations(violations)
                 .build();
