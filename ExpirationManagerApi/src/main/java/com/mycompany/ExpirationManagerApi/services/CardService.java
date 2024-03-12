@@ -116,14 +116,15 @@ public class CardService {
 
     @Transactional
     public List<Card> findAllCloseToExpire() {
-        return cardRepository.findAllCloseToExpirationByDuration(LocalDate.now(), Duration.ofDays(30));
+        return cardRepository.findAllByDateOfExpirationLessThan(LocalDate.now(), Duration.ofDays(30));
     }
 
     @Transactional
     public List<Card> findAllReadyToExpire() {
-        return cardRepository.findAllCloseToExpirationByDuration(LocalDate.now(), Duration.ofDays(0));
+        return cardRepository.findAllByDateOfExpiration(LocalDate.now());
     }
 
+    @Transactional
     private void validateCardNumberIsUnique(String cardNumber) {
         if (cardRepository.findByCardNumber(cardNumber).isPresent()) {
             ConstraintViolation cv = ConstraintViolation.builder()
