@@ -107,6 +107,7 @@ public class CardControllerTests {
                 .dateOfExpiration(LocalDate.parse("2024-11-24"))
                 .dateOfIssue(LocalDate.parse("2020-11-11"))
                 .status(CardStatus.OK)
+                .clientId(2L)
                 .build());
     }
 

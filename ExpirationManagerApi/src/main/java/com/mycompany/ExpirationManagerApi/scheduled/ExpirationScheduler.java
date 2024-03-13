@@ -32,6 +32,7 @@ public class ExpirationScheduler {
                 .dateOfIssue(LocalDate.now())
                 .dateOfExpiration(LocalDate.now().plusYears(4))
                 .status(CardStatus.OK)
+                .clientId(clientId)
                 .build();
         return cardService.createCard(clientId, newCard);
     }

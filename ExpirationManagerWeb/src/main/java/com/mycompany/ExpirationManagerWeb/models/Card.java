@@ -28,5 +28,8 @@ public class Card {
     private LocalDate dateOfExpiration;
 
     private CardStatus status = CardStatus.OK;
+
+    @JsonProperty("client_id")
+    private Long clientId;
 }
 

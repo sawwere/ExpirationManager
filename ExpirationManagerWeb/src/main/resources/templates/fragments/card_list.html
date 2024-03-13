@@ -24,6 +24,9 @@
                 <td>
                     <a th:href="@{/cards/{id}/status/annul(id=${card.id})}">Аннулировать</a>
                 </td>
+                <td>
+                    <a th:href="@{/clients/{id}(id=${card.getClientId()})}">Владелец</a>
+                </td>
             </tr>
             </tbody>
         </table>

@@ -116,12 +116,12 @@ public class CardService {
 
     @Transactional
     public List<Card> findAllCloseToExpire() {
-        return cardRepository.findAllByDateOfExpirationLessThan(LocalDate.now(), Duration.ofDays(30));
+        return cardRepository.findAllCloseToDateOfExpiration(LocalDate.now(), Duration.ofDays(30));
     }
 
     @Transactional
     public List<Card> findAllReadyToExpire() {
-        return cardRepository.findAllByDateOfExpiration(LocalDate.now());
+        return cardRepository.findAllByDateOfExpirationLessThan(LocalDate.now());
     }
 
     @Transactional

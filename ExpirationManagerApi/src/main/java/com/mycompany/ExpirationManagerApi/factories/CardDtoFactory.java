@@ -13,6 +13,7 @@ public class CardDtoFactory {
                 .dateOfIssue(card.getDateOfIssue())
                 .dateOfExpiration(card.getDateOfExpiration())
                 .status(card.getStatus())
+                .clientId(card.getClient().getId())
                 .build();
     }
 }

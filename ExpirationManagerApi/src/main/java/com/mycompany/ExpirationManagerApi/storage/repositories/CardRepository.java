@@ -22,12 +22,12 @@ public interface CardRepository extends JpaRepository<Card, Long> {
                 JOIN FETCH c.client
                 WHERE c.status = 'OK'
                     AND c.dateOfExpiration - :date < 0""")
-    List<Card> findAllByDateOfExpiration(LocalDate date);
+    List<Card> findAllByDateOfExpirationLessThan(LocalDate date);
 
     @Query(""" 
                 SELECT c FROM Card c
                 JOIN FETCH c.client
                 WHERE c.status = 'OK'
                     AND c.dateOfExpiration - :date = :daysUntilExpiration""")
-    List<Card> findAllByDateOfExpirationLessThan(LocalDate date, Duration daysUntilExpiration);
+    List<Card> findAllCloseToDateOfExpiration(LocalDate date, Duration daysUntilExpiration);
 }
