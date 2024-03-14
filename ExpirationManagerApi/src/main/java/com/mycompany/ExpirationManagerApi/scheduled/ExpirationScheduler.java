@@ -9,6 +9,7 @@ import com.mycompany.ExpirationManagerApi.storage.CardStatus;
 import com.mycompany.ExpirationManagerApi.storage.entities.Card;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import java.util.logging.Logger;
 
 @Component
 @RequiredArgsConstructor
+@ConditionalOnProperty(name="scheduler.enabled")
 public class ExpirationScheduler {
     private static final Logger logger =
             Logger.getLogger(ExpirationScheduler.class.getName());

@@ -5,6 +5,7 @@ import com.mycompany.ExpirationManagerApi.services.CustomEmailService;
 import com.mycompany.ExpirationManagerApi.storage.entities.Card;
 import com.mycompany.ExpirationManagerApi.storage.entities.Client;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -15,6 +16,7 @@ import java.util.logging.Logger;
 
 @Component
 @RequiredArgsConstructor
+@ConditionalOnProperty(name="scheduler.enabled")
 public class NotificationScheduler {
     private static final Logger logger =
             Logger.getLogger(NotificationScheduler.class.getName());
