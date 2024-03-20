@@ -15,13 +15,29 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.util.List;
 
+/**
+ * Глобальный обработчик возникающих в процессе работы приложения исключений.
+ * Служит для возвращение сообщений об ошибках в едином формате при их возникновении.
+ */
 @ControllerAdvice
 public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
+    /**
+     * Базовый обработчик для ловли непойманных другими методами исключений
+     * @param ex возникшее исключение
+     * @param request текущий запрос
+     * @return ResponseEntity с телом, содержашим информацию об ошибке
+     */
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) throws Exception {
         return handleException(ex, request);
     }
 
+    /**
+     * Обработчик для ошибок валидации.
+     * @param ex возникшее исключение
+     * @param request текущий запрос
+     * @return ResponseEntity с телом, содержашим информацию об ошибке в виде ErrorInfo
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ValidationException.class)
     protected ResponseEntity<Object> handleValidationException(
@@ -44,6 +60,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
+    /**
+     * Обработчик ошибки валидации, возникающий при проверке аргументов помеченных аннотацией @Valid
+     * @param ex the exception to handle
+     * @param headers the headers to be written to the response
+     * @param status the selected response status
+     * @param request the current request
+     * @return ResponseEntity с телом, содержашим информацию об ошибке в виде ErrorInfo
+     */
     @Override
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
@@ -68,6 +92,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
+    /**
+     * Обработчик ошибки, возникающий при получении некорректного JSON объекта
+     * @param ex the exception to handle
+     * @param headers the headers to use for the response
+     * @param status the status code to use for the response
+     * @param request the current request
+     * @return ResponseEntity с телом, содержашим информацию об ошибке в виде ErrorInfo
+     */
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
             HttpMessageNotReadableException ex,
@@ -82,6 +114,14 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
+    /**
+     * Обработчик ошибки, возникающий при отстутствии обработчика на пользвательские запрос
+     * @param ex the exception to handle
+     * @param headers the headers to use for the response
+     * @param status the status code to use for the response
+     * @param request the current request
+     * @return ResponseEntity с телом, содержашим информацию об ошибке в виде ErrorInfo
+     */
     @Override
     protected ResponseEntity<Object> handleNoHandlerFoundException(
             NoHandlerFoundException ex,

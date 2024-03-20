@@ -20,6 +20,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+/**
+ * Отвечает за основную логику приложения касательно работы с банковскимии картами.
+ */
 @Service
 @RequiredArgsConstructor
 public class CardService {
@@ -30,16 +33,32 @@ public class CardService {
 
     private final ClientService clientService;
 
+    /**
+     * Возвращает карту по заданому идентификатору.
+     * @param id идентификатор искомой карты
+     * @return Optional объект в котором будет содержаться искомая карта(при ее наличии в базе данных)
+     */
     @Transactional
     public Optional<Card> findCard(Long id) {
         return cardRepository.findById(id);
     }
 
+    /**
+     * Возвращает карту по заданому номеру.
+     * @param cardNumber номер искомой карты
+     * @return Optional объект в котором будет содержаться искомая карта(при ее наличии в базе данных)
+     */
     @Transactional
     public Optional<Card> findByCardNumber(String cardNumber) {
         return cardRepository.findByCardNumber(cardNumber);
     }
 
+    /**
+     * Возвращает карту по заданому идентификатору и генерирует исключение, если ее нет.
+     * @param cardId идентификатор искомой карты
+     * @return искомая карта
+     * @throws NotFoundException, если карты с данным идентификатором не существует
+     */
     @Transactional
     public Card findCardOrElseThrowException(Long cardId) {
         return cardRepository.findById(cardId)
@@ -47,6 +66,14 @@ public class CardService {
                 );
     }
 
+    /**
+     * Создает запись в базе данных о карте.
+     * @param clientId идентификатор клиента-владельца карты
+     * @param cardDto CardDto, содержащий необходимые для создания карты данные
+     * @return сохраненная в базе данных карта
+     * @throws NotFoundException, если клиента с заданным идентификатором не существует
+     * @throws ValidationException, если карта имеет некорректный номер или даты выдычи и истечения срока.
+     */
     @Transactional
     public Card createCard(Long clientId, @Valid CardDto cardDto) {
         Client client = clientService.findClientOrElseThrowException(clientId);
@@ -80,6 +107,13 @@ public class CardService {
         return card;
     }
 
+    /**
+     * Обновляет статус карты. Допустимо изменение статуса с OK на ANNULLED или OK на EXPIRED.
+     * @param cardId идентификатор карты, статус которой нужно изменить
+     * @param cardStatusDto CardStatusDto, содержащий данные о новом статусе
+     * @return карта с измененным статусом
+     * @throws NotFoundException, если карты с заданным идентификатором не существует
+     */
     @Transactional
     public Card updateCardStatus(Long cardId, CardStatusDto cardStatusDto) {
         Card card = findCardOrElseThrowException(cardId);
@@ -96,6 +130,11 @@ public class CardService {
         return card;
     }
 
+    /**
+     * Удаляет из базы данных запись о клиенте с заданным идентиикатором.
+     * @param cardId идентификатор карты, которую нужно удалить
+     * @throws NotFoundException, если карты с заданным идентификатором не существует
+     */
     @Transactional
     public void deleteCard(Long cardId) {
         findCardOrElseThrowException(cardId);
@@ -103,27 +142,55 @@ public class CardService {
         logger.info("Deleted card with id '%d'".formatted(cardId));
     }
 
+    /**
+     * Возвращает список всех карт клиента с данным идентификатором.
+     * @param clientId идентификатор клиента, карты которого нужно получить
+     * @return список всех карт данного клиента
+     * @throws NotFoundException, если клиента с заданным идентификатором не существует
+     */
     @Transactional
     public List<Card> findAllByClient(Long clientId) {
         Client client = clientService.findClientOrElseThrowException(clientId);
         return cardRepository.findAllByClient(client);
     }
 
+    /**
+     * Возвращает список всех существующих в базе данных карт.
+     * @return список всех существующих в базе данных карт
+     */
     @Transactional
     public List<Card> findAll() {
         return cardRepository.findAllBy();
     }
 
+    /**
+     * Возвращает список карт с истекающим сроком.
+     * Таковыми считаются карты, чья дата истечения наступит через месяц
+     * относительно текущего(на момент вызова) дня и имеющие статус OK.
+     * Используется для рассылки клиентам уведомлений об исчтечении их карт.
+     * @return список карт с истекающим сроком
+     */
     @Transactional
     public List<Card> findAllCloseToExpire() {
         return cardRepository.findAllCloseToDateOfExpiration(LocalDate.now(), Duration.ofDays(30));
     }
 
+    /**
+     * Возвращает список карт с истекшим сроком.
+     * Таковыми считаются карты, чья дата истечения уже наступила и имеющие статус OK.
+     * Используется для смены стаутса таких карт на EXPIRED
+     * @return список карт с истекаюшим сроком
+     */
     @Transactional
     public List<Card> findAllReadyToExpire() {
         return cardRepository.findAllByDateOfExpirationLessThan(LocalDate.now());
     }
 
+    /**
+     * Проверяет уникальность номера карты.
+     * @param cardNumber номер, который нужно проверить.
+     * @throws ValidationException, если карта с заданным номером уже есть в базе данных
+     */
     @Transactional
     private void validateCardNumberIsUnique(String cardNumber) {
         if (cardRepository.findByCardNumber(cardNumber).isPresent()) {
@@ -138,6 +205,12 @@ public class CardService {
         }
     }
 
+    /**
+     * Проверяет, что дата выдачи не раньше даты истечения срока
+     * @param dateOfIssue дата выдачи карты
+     * @param dateOfExpiration  дата истечения срока карты
+     * @throws ValidationException, если дата выдачи раньше даты истечения срока
+     */
     private void validateIssueIsBeforeExpiration(LocalDate dateOfIssue, LocalDate dateOfExpiration) {
         if (dateOfIssue.isAfter(dateOfExpiration)) {
             ConstraintViolation cv = ConstraintViolation.builder()
@@ -154,6 +227,12 @@ public class CardService {
     //-----------------------------------------------------
     // CARD NUMBER
     //-----------------------------------------------------
+
+    /**
+     * Генерирует уникальный и еще не представленный в базе данных номер для карты.
+     * @param prefix строка, с которой должен начинаться сгенерированный номер
+     * @return сгенерированный номер карты
+     */
     @Transactional
     public String generateUnusedCardNumber(String prefix) {
         String newCardNumber = generateCardNumber(prefix);
@@ -167,8 +246,11 @@ public class CardService {
     }
 
     /**
-     * @param cardNumber string to be validated
-     * @return result of applying validation Luhn algorithm
+     * Проверяет правильность номера карты согласно алгоритма Луна.
+     * Подразумевается, что строка состоит из десятичный цифр.
+     * Правильной считается строка, состоящая из 16 символов и отвечающая проверке алгоритмом Луна.
+     * @param cardNumber строка, которую нужно проверить
+     * @return true, если результат проверки положительный, иначе - false
      */
     public Boolean isCardNumberValid(String cardNumber) {
         if (cardNumber.length() != 16)
@@ -188,8 +270,9 @@ public class CardService {
     }
 
     /**
-     * @param prefix generated card number starts with that string (1-15 symbols)
-     * @return card number generated with Luhn algorithm
+     * Генерирует номер карты с заданным префиксом.
+     * @param prefix подстрока, с которой будет начинаться номер карты (1-15 символов)
+     * @return сгенерированный согласно алгоритму Луна номер карты
      */
     public String generateCardNumber(String prefix) {
         if (prefix.length() > 15)
@@ -210,6 +293,12 @@ public class CardService {
         return combined + generateCheckDigit(combined);
     }
 
+    /**
+     * Вспомогательная функция для вычисления контрольной цифры.
+     * Используется при генериации номера карты.
+     * @param cardNumber номер карты, для которого нужно вычислить контрольную цифру
+     * @return символ контрольной цифры
+     */
     private char generateCheckDigit(String cardNumber) {
         int sum = 0;
         int mod = cardNumber.length() % 2;

@@ -8,6 +8,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Исключение, генерируемое при ошибке валиадции сущностей.
+ * Может быть использовано при проверке данных, не отлавливаемых аннотациями jakarta.validation.constraints
+ */
 @Getter
 @ResponseStatus(HttpStatus.BAD_REQUEST)
 public class ValidationException extends RuntimeException{

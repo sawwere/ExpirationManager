@@ -4,6 +4,9 @@ import com.mycompany.ExpirationManagerApi.dto.ClientDto;
 import com.mycompany.ExpirationManagerApi.storage.entities.Client;
 import org.springframework.stereotype.Component;
 
+/**
+ * Класс для создания объектов ClientDto на основе экземпляров класса Client
+ */
 @Component
 public class ClientDtoFactory {
     public ClientDto make(Client client) {

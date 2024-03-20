@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.mycompany</groupId>
 	<artifactId>ExpirationManagerApi</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>ExpirationManagerApi</name>
 	<description>Backend application</description>
 	<properties>
@@ -25,7 +25,6 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
 		</dependency>
-
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
@@ -51,7 +50,6 @@
 			<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
     </dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -68,5 +66,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

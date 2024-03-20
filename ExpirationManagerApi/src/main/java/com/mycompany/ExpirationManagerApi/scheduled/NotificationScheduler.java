@@ -14,6 +14,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * Отвечает за запускаемое задание по информированию клиентов о скором истечении срока их банковских карт.
+ * Данный компонент может быть отключен с помощью свойства scheduler.enabled в конфигурационном файле.
+ */
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty(name="scheduler.enabled")
@@ -24,6 +28,12 @@ public class NotificationScheduler {
     private final CardService cardService;
     private final CustomEmailService emailService;
 
+    /**
+     * Создает текст пиьсьма об истечении срока банковской карты
+     * @param client клиент, которому предназначено письмо
+     * @param card банковская карта, о которой необходимо сообщить
+     * @return готовый к отправке текст письма
+     */
     public String generateExpirationMessage(Client client, Card card) {
         LocalDate dateOfExpiration = card.getDateOfExpiration();
         String niceDate = String.format("%d.%d.%d",
@@ -37,6 +47,11 @@ public class NotificationScheduler {
                 client.getFirstName(), hidedCardNumber, niceDate);
     }
 
+    /**
+     * Занимается рассылкой уведомлений пользователям о скором истечении срока их банковских карт
+     * Интервал между запусками может быть настроен в кофигурационном файле приложения.
+     * Для каждой истекающей карты отправляет письмо ее владельцу на его электронную почту
+     */
     @Async
     @Scheduled(fixedRateString = "${interval}")
     public void sendNotificationsAboutCardExpiration() {

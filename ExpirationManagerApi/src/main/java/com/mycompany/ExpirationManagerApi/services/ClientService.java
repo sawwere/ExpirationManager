@@ -17,6 +17,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 
+/**
+ * Отвечает за основную логику приложения касательно работы с клиентами.
+ */
 @Service
 @RequiredArgsConstructor
 public class ClientService {
@@ -25,11 +28,22 @@ public class ClientService {
 
     private final ClientRepository clientRepository;
 
+    /**
+     * Возвращает клиента по заданому идентификатору.
+     * @param id идентификатор искомого клиента
+     * @return Optional объект в котором будет содержаться искомый клиент(при его наличии в базе данных)
+     */
     @Transactional
     public Optional<Client> findClient(Long id) {
         return clientRepository.findById(id);
     }
 
+    /**
+     * Возвращает клиена по заданому идентификатору и генерирует исключение, если его нет.
+     * @param clientId идентификатор искомого клиента
+     * @return искомый клиент
+     * @throws NotFoundException, если клиента с данным идентификатором не существует
+     */
     @Transactional
     public Client findClientOrElseThrowException(Long clientId) {
         return clientRepository.findById(clientId)
@@ -37,6 +51,13 @@ public class ClientService {
                 );
     }
 
+    /**
+     * Создает запись в базе данных о клиенте.
+     * @param clientDto ClientDto, содержащий необходимые для создания карты данные.
+     *                  Может отстутсовать поле patronymicName(отчество)
+     * @return сохраненный в базе данных клиент
+     * @throws ValidationException, если клиент имеет неуникальный адрес почты или паспортные данные
+     */
     @Transactional
     public Client createClient(@Valid ClientDto clientDto) {
         validatePassportAndEmailAreUnique(clientDto);
@@ -53,6 +74,11 @@ public class ClientService {
         return client;
     }
 
+    /**
+     * Удаляет из базы данных запись о клиенте с заданным идентиикатором.
+     * @param clientId идентификатор клиента, которого нужно удалить
+     * @throws NotFoundException, если клиента с заданным идентификатором не существует
+     */
     @Transactional
     public void deleteClient(Long clientId) {
         Client client = findClientOrElseThrowException(clientId);
@@ -60,11 +86,20 @@ public class ClientService {
         logger.info("Deleted client with id '%d'".formatted(clientId));
     }
 
+    /**
+     * Возвращает список всех существующих в базе данных клиентов.
+     * @return список всех существующих в базе данных клиентов
+     */
     @Transactional
     public List<Client> findAll() {
         return clientRepository.streamAllBy().toList();
     }
 
+    /**
+     * Проверяет пасспортные данные и адрес электронной почты клиента на уникальность.
+     * @param clientDto клиент, чьи данные нужно проверить
+     * @throws ValidationException, если клиент имеет неуникальный адрес почты или паспортные данные
+     */
     private void validatePassportAndEmailAreUnique(ClientDto clientDto) {
         var optionalClient = clientRepository.findFirstByPassportOrEmail(clientDto.getPassport(), clientDto.getEmail());
         if (optionalClient.isPresent()) {

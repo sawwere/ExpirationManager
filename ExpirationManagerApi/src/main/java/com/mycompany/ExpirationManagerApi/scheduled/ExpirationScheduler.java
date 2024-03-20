@@ -18,6 +18,10 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.logging.Logger;
 
+/**
+ * Отвечает за запускаемое задание по изменению статуса банковских карт при истечении их срока дейтсвия.
+ * Данный компонент может быть отключен с помощью свойства scheduler.enabled в конфигурационном файле.
+ */
 @Component
 @RequiredArgsConstructor
 @ConditionalOnProperty(name="scheduler.enabled")
@@ -27,6 +31,12 @@ public class ExpirationScheduler {
 
     private final CardService cardService;
 
+    /**
+     * Создает новую карту на замену старой.
+     * @param clientId идентификатор клиента, которому будет принадлежать новаяч карта
+     * @param card карта, которую необходимо заменить
+     * @return новая карта с сгенерированным уникальным номером
+     */
     @Transactional
     public Card generateNewCard(long clientId, Card card) {
         CardDto newCard = CardDto.builder()
@@ -39,6 +49,11 @@ public class ExpirationScheduler {
         return cardService.createCard(clientId, newCard);
     }
 
+    /**
+     * Занимается изменением статуса карт.
+     * Интервал между запусками может быть настроен в кофигурационном файле приложения.
+     * Для каждой карты, имеющей статус OK и дату истечения срока ранее текущего дня, изменяет статус на EXPIRED.
+     */
     @Async
     @Scheduled(fixedRateString = "${interval}")
     public void makeCardsExpired() {

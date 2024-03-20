@@ -10,6 +10,9 @@ import org.springframework.stereotype.Service;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Служит для отправки сообщений по электронной почте
+ */
 @Service
 @RequiredArgsConstructor
 public class CustomEmailService{
@@ -18,6 +21,12 @@ public class CustomEmailService{
 
     private final JavaMailSender emailSender;
 
+    /**
+     * Отправляет письмо по электронной почте
+     * @param toAddress кому будет адресовано письмо
+     * @param subject тема письма
+     * @param message текст письма
+     */
     public void sendSimpleEmail(String toAddress, String subject, String message) {
         try {
             SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
