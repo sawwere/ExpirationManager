@@ -10,12 +10,20 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.context.request.WebRequest;
 
+/**
+ * Служит для перехвата возникающих ошибок
+ */
 @RequiredArgsConstructor
 @Controller
 public class CustomErrorController implements ErrorController {
     private static final String ERROR_PATH = "/error";
     private final ErrorAttributes errorAttributes;
 
+    /**
+     * Перехватывает возникающие ошибки
+     * @param webRequest текущий запрос
+     * @return ResponseEntity с телом, содержашим информацию об ошибке в виде ErrorInfo
+     */
     @RequestMapping(CustomErrorController.ERROR_PATH)
     public ResponseEntity<ErrorInfo> error(WebRequest webRequest) {
         var attributes = errorAttributes.getErrorAttributes(webRequest,

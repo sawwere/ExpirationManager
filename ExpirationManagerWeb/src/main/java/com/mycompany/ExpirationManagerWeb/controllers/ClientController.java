@@ -14,7 +14,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
-
+/**
+ * Контроллер, отвечающий за обработку всех входящих запросов на страницах клиентов
+ */
 @Controller
 @RequiredArgsConstructor
 public class ClientController {
@@ -22,6 +24,11 @@ public class ClientController {
     public static final String GET_CLIENTS = "/clients";
     public static final String CREATE_CLIENT = "/clients";
     public static final String SHOW_CLIENT = "/clients/{client_id}";
+
+    /**
+     * Обрабатывает входящеий запрос на получение страницы со списком клиентов
+     * @return страница со списком клиентов
+     */
     @GetMapping(GET_CLIENTS)
     public ModelAndView index() {
         ModelAndView mav = new ModelAndView("clients");
@@ -32,12 +39,22 @@ public class ClientController {
         return mav;
     }
 
+    /**
+     * Обрабатывает входящеий запрос на создание нового клиента
+     * @param client ClientDto, содержащий необходимые для создания клиента данные
+     * @return переход на страницу со списком клиентов
+     */
     @PostMapping(CREATE_CLIENT)
     public String create(@Valid @ModelAttribute(value="newClient") Client client) {
         restClientService.createClient(client);
         return "redirect:/clients";
     }
 
+    /**
+     * Обрабатывает входящеий запрос на получение страницы выбранного клиента
+     * @param clientId идентификатор клиента, страницу которого нужно открыть
+     * @return страница данного клиента
+     */
     @GetMapping(SHOW_CLIENT)
     public ModelAndView show(
             @PathVariable(value = "client_id") Long clientId) {

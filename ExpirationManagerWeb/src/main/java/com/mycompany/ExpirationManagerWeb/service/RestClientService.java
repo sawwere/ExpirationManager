@@ -18,6 +18,9 @@ import org.springframework.web.client.RestClient;
 
 import java.util.List;
 
+/**
+ * Отвечает за общение с API сервисом, обработку полученных данных.
+ */
 @Service
 public class RestClientService {
     private final RestClient restClient;
@@ -43,6 +46,10 @@ public class RestClientService {
                 .build();
     }
 
+    /**
+     * Выполняет запрос на получение списка клиентов.
+     * @return список клиентов
+     */
     public List<Client> getClients() {
         ResponseEntity<Client[]> clients = restClient.get()
                 .uri("/clients")
@@ -51,6 +58,10 @@ public class RestClientService {
         return List.of(clients.getBody());
     }
 
+    /**
+     * Выполняет запрос на создание клиента.
+     * @param client ClientDto, содержащий необходимые для создания клиента данные
+     */
     public void createClient(Client client) {
         String result = restClient.post()
                 .uri("/clients")
@@ -59,6 +70,11 @@ public class RestClientService {
                 .body(String.class);
     }
 
+    /**
+     * Выполняет запрос на получение клиента.
+     * @param clientId идентификатор искомого клиента
+     * @return искомый клиент
+     */
     public Client getClient(Long clientId) {
         return restClient.get()
                 .uri("/clients/%d".formatted(clientId))
@@ -66,6 +82,10 @@ public class RestClientService {
                 .toEntity(Client.class).getBody();
     }
 
+    /**
+     * Выполняет запрос на получение списка банковских карт.
+     * @return список банковских карт
+     */
     public List<Card> getCards() {
         ResponseEntity<Card[]> cards = restClient.get()
                 .uri("/cards")
@@ -74,6 +94,11 @@ public class RestClientService {
         return List.of(cards.getBody());
     }
 
+    /**
+     * Выполняет запрос на получение списка банковских карт заданного клиента.
+     * @param clientId идентификатор клиента-владельца карты
+     * @return список банковских карт заданного клиента
+     */
     public List<Card> getCardsByClientId(Long clientId) {
         ResponseEntity<Card[]> cards = restClient.get()
                 .uri("/clients/%d/cards".formatted(clientId))
@@ -82,6 +107,11 @@ public class RestClientService {
         return List.of(cards.getBody());
     }
 
+    /**
+     * Выполняет запрос на создание карты.
+     * @param clientId идентификатор клиента-владельца карты
+     * @param card CardDto, содержащий необходимые для создания карты данные
+     */
     public void createCard(Long clientId, Card card) {
         String result = restClient.post()
                 .uri("/clients/%d/cards".formatted(clientId))
@@ -90,6 +120,10 @@ public class RestClientService {
                 .body(String.class);
     }
 
+    /**
+     * Выполняет запрос на аннулирование карты.
+     * @param cardId идентификатор карты, статус которой нужно изменить
+     */
     public void annulCard(Long cardId) {
         String result = restClient.post()
                 .uri("/cards/%d/status".formatted(cardId))

@@ -11,8 +11,18 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
+/**
+ * Глобальный обработчик возникающих в процессе работы приложения исключений.
+ * Служит для возвращение сообщений об ошибках в едином формате при их возникновении.
+ */
 @ControllerAdvice
 public class CustomExceptionHandler {
+    /**
+     * Базовый обработчик для ловли непойманных другими методами исключений
+     * @param ex возникшее исключение
+     * @param request текущий запрос
+     * @return страница, содержащая информацию об ошибке
+     */
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     protected ModelAndView handleAllExceptions(Exception ex, WebRequest request) throws Exception {
@@ -24,6 +34,14 @@ public class CustomExceptionHandler {
         mav.addObject("errorInfo", errorInfo);
         return mav;
     }
+
+    /**
+     * Обрабатывает исключения, генерируемые в случае возврата API сервисом ошибки с кодом 5xx
+     * или остутсвия доступа к нему.
+     * @param ex возникшее исключение
+     * @param request текущий запрос
+     * @return страница, содержащая информацию об ошибке
+     */
     @ResponseStatus(HttpStatus.GATEWAY_TIMEOUT)
     @ExceptionHandler(value = {ResourceAccessException.class, ApiNotRespondingException.class })
     protected ModelAndView handleApiServerSideException(RuntimeException ex, WebRequest request) {
@@ -36,6 +54,12 @@ public class CustomExceptionHandler {
         return mav;
     }
 
+    /**
+     * Обрабатывает исключения, связанные с передачей некорректных данных
+     * @param ex возникшее исключение
+     * @param request текущий запрос
+     * @return страница, содержащая информацию об ошибке
+     */
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {MethodArgumentNotValidException.class})
     public ModelAndView handleMethodArgumentNotValid(MethodArgumentNotValidException ex, WebRequest request) {

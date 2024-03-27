@@ -13,6 +13,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
+/**
+ * Контроллер, отвечающий за обработку всех входящих запросов на действия с банковскими картами
+ */
 @Controller
 @RequiredArgsConstructor
 public class CardController {
@@ -21,6 +24,10 @@ public class CardController {
     public static final String CREATE_CARD = "/clients/{client_id}/cards";
     public static final String ANNUL_CARD = "/cards/{card_id}/status/annul";
 
+    /**
+     * Обрабатывает входящеий запрос на получение страницы со списком банковских карт.
+     * @return страница со списком банковских карт
+     */
     @GetMapping(GET_CARDS)
     public ModelAndView index() {
         ModelAndView mav = new ModelAndView("cards");
@@ -29,6 +36,12 @@ public class CardController {
         return mav;
     }
 
+    /**
+     * Обрабатывает входящеий запрос на создание новой карты.
+     * @param clientId идентификатор клиента-владельца карты
+     * @param card CardDto, содержащий необходимые для создания карты данные
+     * @return переход на страницу данного клиента
+     */
     @PostMapping(CREATE_CARD)
     public String create(
             @PathVariable (value = "client_id") Long clientId,
@@ -37,6 +50,12 @@ public class CardController {
         return "redirect:%s".formatted(ClientController.SHOW_CLIENT);
     }
 
+    /**
+     *Обрабатывает входящеий запрос на аннулирование карты.
+     * @param cardId идентификатор карты, статус которой нужно изменить
+     * @param httpServletRequest текущий запрос
+     * @return переход на страницу, с которой был вызван метод
+     */
     @GetMapping(ANNUL_CARD)
     public String annulCard(@PathVariable(value = "card_id") Long cardId,
                             HttpServletRequest httpServletRequest) {
